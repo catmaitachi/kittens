@@ -1,0 +1,57 @@
+{
+  "name": "kittens",
+  "version": "0.1.0",
+  "description": "Gatinhos em pixel art que moram dentro de qualquer elemento da página: andam, correm, pulam nos elementos, escalam paredes, brincam, dormem e se limpam.",
+  "keywords": [
+    "pet",
+    "pixel-art",
+    "cat",
+    "kitten",
+    "web-component",
+    "typescript",
+    "vscode-pets"
+  ],
+  "license": "MIT",
+  "author": "Lucas Spiazzi",
+  "homepage": "https://github.com/catmaitachi/kittens#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/catmaitachi/kittens.git"
+  },
+  "bugs": {
+    "url": "https://github.com/catmaitachi/kittens/issues"
+  },
+  "type": "module",
+  "main": "./dist/kittens.umd.cjs",
+  "module": "./dist/kittens.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/kittens.js",
+      "require": "./dist/kittens.umd.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "assets"
+  ],
+  "sideEffects": [
+    "./src/element.ts",
+    "./dist/kittens.js",
+    "./dist/kittens.umd.cjs"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "build:demo": "vite build --mode demo",
+    "preview": "vite preview --outDir dist-demo",
+    "typecheck": "tsc -p tsconfig.json && tsc -p scripts/tsconfig.json",
+    "sprites": "node --experimental-strip-types --no-warnings=ExperimentalWarning scripts/export-sprites.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.0"
+  }
+}
