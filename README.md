@@ -4,7 +4,7 @@ Gatinhos em pixel art que moram dentro de qualquer elemento da sua página. Eles
 correm, pulam nos seus cards, escalam paredes, brincam, dormem e se limpam — tudo sozinhos,
 sem você programar um passo sequer.
 
-<img src="docs/kittens.gif" alt="Um gato calico anda, pula numa prateleira, corre e escala uma coluna enquanto outro cochila e um terceiro abana o rabo" width="408">
+<img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/kittens.gif" alt="Um gato calico anda, pula numa prateleira, corre e escala uma coluna enquanto outro cochila e um terceiro abana o rabo" width="408">
 
 - **Sem dependências** e leve: ~18 kB gzip, um único `requestAnimationFrame` para todos.
 - **Web Component** (`<kitten-pet>`) ou **classe** (`new Kitten(elemento)`).
@@ -12,7 +12,7 @@ sem você programar um passo sequer.
   laterais deles e voltam a se ajustar quando a página muda.
 - Respeita `prefers-reduced-motion`.
 
-![Pelagens: calico, laranja, cinza, preto e siamês](docs/pelagens.png)
+![Pelagens: calico, laranja, cinza, preto e siamês](https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/pelagens.png)
 
 ## Instalar
 
@@ -118,14 +118,14 @@ Todos incluem `cat` (a instância).
 
 ## Poses
 
-![Poses: sentado, deitado, dormindo, se limpando, correndo, espreguiçando, no colo e escalando](docs/poses.png)
+![Poses: sentado, deitado, dormindo, se limpando, correndo, espreguiçando, no colo e escalando](https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/poses.png)
 
-A arte é uma grade de texto em [`src/sprites/frames.ts`](src/sprites/frames.ts) — 28 frames
+A arte é uma grade de texto em [`src/sprites/frames.ts`](https://github.com/catmaitachi/kittens/blob/main/src/sprites/frames.ts) — 28 frames
 desenhados lisos, sem mancha nenhuma. Quem dá a pelagem é a **máscara** de cada raça em
-[`src/sprites/palette.ts`](src/sprites/palette.ts), que pinta pixel a pixel na hora de gerar
+[`src/sprites/palette.ts`](https://github.com/catmaitachi/kittens/blob/main/src/sprites/palette.ts), que pinta pixel a pixel na hora de gerar
 a spritesheet. Trocar de pelagem troca o padrão, não só as cores.
 
-![Spritesheet do calico](assets/kitten-calico@6x.png)
+![Spritesheet do calico](https://raw.githubusercontent.com/catmaitachi/kittens/main/assets/kitten-calico@6x.png)
 
 ## Vários gatos
 
