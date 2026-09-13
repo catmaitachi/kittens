@@ -1,0 +1,37 @@
+{
+  "cell": {
+    "w": 32,
+    "h": 24
+  },
+  "cols": 8,
+  "frames": {
+    "sit": 0,
+    "sitBlink": 1,
+    "sitTail": 2,
+    "meow": 3,
+    "yawn": 4,
+    "lick": 5,
+    "lickUp": 6,
+    "wash": 7,
+    "stand": 8,
+    "walkA": 9,
+    "walkB": 10,
+    "gather": 11,
+    "leap": 12,
+    "runA": 13,
+    "runB": 14,
+    "runC": 15,
+    "runD": 16,
+    "loaf": 17,
+    "loafTail": 18,
+    "sleep": 19,
+    "sleepBreath": 20,
+    "stretch": 21,
+    "batUp": 22,
+    "batDown": 23,
+    "dangleA": 24,
+    "dangleB": 25,
+    "dangleC": 26,
+    "dangleD": 27
+  }
+}
