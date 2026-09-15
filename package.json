@@ -1,7 +1,7 @@
 {
   "name": "kittens",
   "version": "0.1.0",
-  "description": "Gatinhos em pixel art que moram dentro de qualquer elemento da página: andam, correm, pulam nos elementos, escalam paredes, brincam, dormem e se limpam.",
+  "description": "Pixel-art kittens that live inside any element of your page: they walk, run, jump onto elements, climb walls, play, groom and sleep.",
   "keywords": [
     "pet",
     "pixel-art",

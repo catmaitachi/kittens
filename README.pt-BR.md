@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/hero-dark.gif">
-  <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/hero-light.gif" alt="O título kittens em letras de papel recortado, com dois gatos em pixel art andando por cima" width="760">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/pt/hero-dark.gif">
+  <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/pt/hero-light.gif" alt="O título kittens em letras de papel recortado, com dois gatos em pixel art andando por cima" width="760">
 </picture>
 
 <br>
@@ -12,7 +12,7 @@
 <img src="https://img.shields.io/badge/TypeScript-tipos_inclusos-e07b39?style=flat-square&labelColor=2b2321" alt="tipos de TypeScript inclusos">
 <img src="https://img.shields.io/badge/licença-MIT-e07b39?style=flat-square&labelColor=2b2321" alt="licença MIT">
 
-**[Ver os gatos ao vivo](https://catmaitachi.github.io/kittens/)** · [npm](https://www.npmjs.com/package/kittens) · [Relatar um problema](https://github.com/catmaitachi/kittens/issues)
+**[Ver os gatos ao vivo](https://catmaitachi.github.io/kittens/)** · [English](README.md) · [npm](https://www.npmjs.com/package/kittens) · [Relatar um problema](https://github.com/catmaitachi/kittens/issues)
 
 </div>
 
@@ -87,8 +87,8 @@ Também aceita uma paleta sua no lugar do nome. Os tipos `Palette` e `PALETTES` 
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/summon-dark.gif">
-  <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/summon-light.gif" alt="Mural de cortiça: a cada duplo clique aparece um alfinete e os gatos correm até ele" width="760">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/pt/summon-dark.gif">
+  <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/pt/summon-light.gif" alt="Mural de cortiça: a cada duplo clique aparece um alfinete e os gatos correm até ele" width="760">
 </picture>
 
 </div>
@@ -107,8 +107,8 @@ cat.addEventListener('summon', (e) => console.log(e.detail.x, e.detail.y));
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/parkour-dark.gif">
-  <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/parkour-light.gif" alt="Página de scrapbook com polaroids em alturas diferentes; os gatos sobem de uma para outra" width="760">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/pt/parkour-dark.gif">
+  <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/pt/parkour-light.gif" alt="Página de scrapbook com polaroids em alturas diferentes; os gatos sobem de uma para outra" width="760">
 </picture>
 
 </div>
@@ -130,8 +130,8 @@ Os gatos leem o layout de verdade. Pisam no topo dos elementos, escalam as later
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/crowd-dark.gif">
-  <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/crowd-light.gif" alt="Caixa de papelão com cinco gatos de pelagens diferentes brincando juntos" width="760">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/pt/crowd-dark.gif">
+  <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/pt/crowd-light.gif" alt="Caixa de papelão com cinco gatos de pelagens diferentes brincando juntos" width="760">
 </picture>
 
 </div>
