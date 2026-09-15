@@ -31,6 +31,8 @@ The [landing page](https://catmaitachi.github.io/kittens/) shows it all running.
 npm i @catmaitachi/kittens
 ```
 
+Using an AI coding agent? Paste [this prompt](docs/agent-prompt.md) into it. It explains what the library does, its whole API and how to add it to your stack.
+
 With the tag, the cat lives in the parent element:
 
 ```html

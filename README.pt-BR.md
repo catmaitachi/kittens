@@ -31,6 +31,8 @@ A [landing page](https://catmaitachi.github.io/kittens/) mostra tudo funcionando
 npm i @catmaitachi/kittens
 ```
 
+Usa um agente de IA para programar? Cole [este prompt](docs/agent-prompt.md) nele. O texto explica o que a biblioteca faz, a API inteira e como aplicar no seu projeto. Ele está em inglês, que os agentes entendem bem.
+
 Com a tag, o gato vive no elemento pai:
 
 ```html

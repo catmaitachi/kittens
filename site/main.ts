@@ -2,6 +2,7 @@ import { Kitten } from '../src/index.ts';
 import type { BehaviorWeights, KittenOptions, PaletteName } from '../src/index.ts';
 import { lang, onLang, setLang, t, type Key, type Lang } from './i18n.ts';
 import { iconSvg, paintIcons } from './icons.ts';
+import AGENT_PROMPT from '../docs/agent-prompt.md?raw';
 
 const byId = (id: string): HTMLElement => {
   const el = document.getElementById(id);
@@ -278,14 +279,16 @@ function themeButton(): void {
 }
 
 function copyButtons(): void {
-  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-copy]')) {
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-copy], [data-copy-agent]')) {
     button.addEventListener('click', async () => {
       try {
-        await navigator.clipboard.writeText(button.dataset.copy ?? '');
+        // O prompt para agentes vem de docs/agent-prompt.md, o mesmo arquivo linkado no README.
+        await navigator.clipboard.writeText(button.hasAttribute('data-copy-agent') ? AGENT_PROMPT : button.dataset.copy ?? '');
         const label = button.querySelector<HTMLElement>('[data-i18n]');
         if (!label) return;
+        const key = label.dataset.i18n as Key;
         label.textContent = t('copied');
-        setTimeout(() => (label.textContent = t('copy')), 1400);
+        setTimeout(() => (label.textContent = t(key)), 1400);
       } catch {
         // Sem permissão de área de transferência: o comando continua visível para copiar à mão.
       }
