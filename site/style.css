@@ -1,0 +1,251 @@
+/* Paleta do calico em papel. As cores de papel não mudam com o tema; o fundo, a tinta e os
+   palcos mudam. */
+:root {
+  --orange: #e07b39;
+  --cream: #f6ecd9;
+  --black: #2b2321;
+  --ink: #1a1412;
+
+  --bg: #e9dcc3;
+  --text: #2b2321;
+  --muted: #5c4f47;
+  --fiber: #fffaf1;
+  --shadow: rgba(43, 35, 33, .35);
+  --code-bg: #2b2321;
+
+  --sheet: #f6ecd9;
+  --lines: #a9bfd8;
+  --margin: #e59a8f;
+  --cork: #b98a5a;
+  --cork-dot: rgba(90, 55, 25, .35);
+  --wood: #7a4e2d;
+  --scrap: #b99a74;
+  --box: #c79d6b;
+  --box-dk: #9c7447;
+  --box-lt: #dcb888;
+  --tape: rgba(243, 230, 196, .82);
+
+  /* Textura de papel: o main.ts troca por um PNG de ruído gerado uma vez em canvas. */
+  --grain: linear-gradient(transparent, transparent);
+  --mono: ui-monospace, "Cascadia Mono", "SF Mono", Consolas, "Liberation Mono", monospace;
+  --display: "Jersey 10", var(--mono);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1c1715; --text: #f1e5cf; --muted: #b8a893; --fiber: #5a4d45; --shadow: rgba(0, 0, 0, .6); --code-bg: #0f0b0a;
+    --sheet: #342b27; --lines: #4a5d73; --margin: #8a4f47; --cork: #6b4d32; --cork-dot: rgba(0, 0, 0, .4); --wood: #3d2717;
+    --scrap: #3b3029; --box: #6e5236; --box-dk: #4a3622; --box-lt: #86664a; --tape: rgba(200, 185, 150, .35);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #1c1715; --text: #f1e5cf; --muted: #b8a893; --fiber: #5a4d45; --shadow: rgba(0, 0, 0, .6); --code-bg: #0f0b0a;
+  --sheet: #342b27; --lines: #4a5d73; --margin: #8a4f47; --cork: #6b4d32; --cork-dot: rgba(0, 0, 0, .4); --wood: #3d2717;
+  --scrap: #3b3029; --box: #6e5236; --box-dk: #4a3622; --box-lt: #86664a; --tape: rgba(200, 185, 150, .35);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { overflow-x: clip; }
+body {
+  margin: 0;
+  background: var(--grain), var(--bg);
+  color: var(--text);
+  font: 15px/1.6 var(--mono);
+}
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+
+.page { max-width: 1040px; margin: 0 auto; padding: 20px 20px 0; }
+
+/* ---------- papel rasgado ---------- */
+/* O elemento guarda a caixa (é nela que o gato pisa). Os <i> que o main.ts insere são o
+   papel: .fiber é a borda branca do rasgo, .face é o papel colorido. */
+.cut { position: relative; filter: drop-shadow(2px 4px 3px var(--shadow)); }
+.cut > .fiber, .cut > .face { position: absolute; pointer-events: none; }
+.cut > .fiber { inset: -3px; background: var(--fiber); }
+.cut > .face { inset: 0; background: var(--grain), var(--c, var(--cream)); }
+.cut > .ink { position: relative; color: var(--fg, var(--black)); }
+.stage { position: relative; user-select: none; -webkit-user-select: none; }
+.stage .cut[style*="--x"], .stage .polaroid { position: absolute; left: var(--x); top: var(--y); width: var(--w); height: var(--h); rotate: var(--r, 0deg); }
+
+/* ---------- topo ---------- */
+.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.lang { display: flex; }
+.tag {
+  border: 0; cursor: pointer; padding: 6px 12px 4px; font: 22px/1 var(--display);
+  background: var(--grain), var(--cream); color: var(--black);
+  clip-path: polygon(0 8%, 12% 0, 30% 6%, 55% 0, 78% 5%, 100% 0, 97% 50%, 100% 100%, 70% 94%, 40% 100%, 15% 95%, 0 100%, 3% 50%);
+  opacity: .55; rotate: 4deg; translate: 0 4px; transition: opacity .15s, rotate .15s, translate .15s;
+}
+.tag + .tag { margin-left: -6px; rotate: -5deg; }
+.tag[aria-pressed="true"] { opacity: 1; rotate: -2deg; translate: 0; background: var(--grain), var(--orange); position: relative; z-index: 1; }
+.theme {
+  border: 0; cursor: pointer; padding: 8px 14px; background: var(--code-bg); color: var(--cream);
+  box-shadow: 3px 3px 0 var(--orange); font-size: 13px;
+}
+.theme:active { translate: 2px 2px; box-shadow: 1px 1px 0 var(--orange); }
+
+.hero { display: flex; flex-direction: column; align-items: center; text-align: center; padding-bottom: 24px; }
+.hero-stage { width: 100%; padding: clamp(70px, 12vw, 120px) 0 28px; }
+.title {
+  margin: 0; display: flex; justify-content: center; gap: clamp(3px, 1.2vw, 16px);
+  font: clamp(48px, 13vw, 150px)/1 var(--display); font-weight: 400;
+}
+.letter {
+  display: grid; place-items: center; width: .72em; height: .92em; translate: 0 var(--dy, 0); rotate: var(--r, 0deg);
+  color: var(--fg); padding-top: .04em;
+}
+.letter { -webkit-text-stroke: var(--stroke, 0) var(--line, transparent); paint-order: stroke fill; }
+.letter[style*="--line"] { --stroke: clamp(3px, .5vw, 7px); }
+.letter > .face { background: var(--grain), var(--c); }
+
+.tagline {
+  margin: 0; padding: 10px 26px 8px; rotate: -1.2deg;
+  font: clamp(22px, 3.4vw, 36px)/1.1 var(--display);
+}
+.install {
+  display: flex; align-items: center; gap: 14px; margin-top: 26px; padding: 12px 12px 12px 22px; rotate: .8deg;
+  font-size: 17px;
+}
+.install code { color: var(--black); }
+.install code::before { content: "$ "; opacity: .5; }
+.copy {
+  position: relative; border: 0; cursor: pointer; padding: 6px 14px; background: var(--black); color: var(--cream);
+  box-shadow: 3px 3px 0 var(--orange); font-size: 14px;
+}
+.copy:active { translate: 2px 2px; box-shadow: 1px 1px 0 var(--orange); }
+.hint { margin: 22px 0 0; color: var(--muted); font-size: 13px; }
+
+/* ---------- seções ---------- */
+.demo { margin-top: clamp(64px, 10vw, 120px); }
+.demo-head { display: flex; gap: clamp(12px, 3vw, 28px); align-items: flex-start; margin-bottom: 26px; }
+.num { font: clamp(56px, 9vw, 96px)/.8 var(--display); color: var(--orange); }
+.demo-head h2 { margin: 0; font: clamp(36px, 6vw, 60px)/1 var(--display); font-weight: 400; }
+.demo-head p { margin: 8px 0 0; max-width: 62ch; color: var(--muted); }
+
+.code {
+  margin: 22px 0 0; padding: 16px 20px; overflow-x: auto; background: var(--code-bg); color: var(--cream);
+  box-shadow: 5px 5px 0 var(--orange); font-size: 13.5px; line-height: 1.55; tab-size: 2;
+}
+.code .c { color: #a8998c; }
+.code .s { color: #f2a06a; }
+.code .k { color: #e8c07a; }
+
+/* 01 · folha de caderno */
+/* Nada de filter nos pais dos palcos: com gatos animando dentro, o navegador refaria o
+   filtro do palco inteiro a cada quadro. A sombra da folha é um irmão com o mesmo rasgo. */
+.notebook-wrap { position: relative; }
+.sheet-shadow { position: absolute; inset: 0; translate: 3px 7px; background: var(--shadow); }
+.notebook {
+  height: 400px;
+  background:
+    linear-gradient(90deg, transparent 58px, var(--margin) 58px 60px, transparent 60px),
+    repeating-linear-gradient(transparent 0 27px, var(--lines) 27px 28px),
+    var(--grain), var(--sheet);
+}
+.tape { position: absolute; z-index: 2; width: 96px; height: 28px; background: var(--tape); pointer-events: none; }
+.swatch {
+  --w: 13%; --h: 40px; border: 0; cursor: pointer; padding: 0; display: grid; place-items: end start;
+  transition: translate .12s;
+}
+.swatch:hover { translate: 0 -2px; }
+.swatch .ink {
+  margin: 0 0 -10px 6px; padding: 1px 6px; font-size: 12px; background: var(--cream); color: var(--black);
+  box-shadow: 1px 1px 0 var(--shadow);
+}
+.swatch[aria-pressed="true"] .ink { background: var(--orange); }
+
+/* 02 · mural de cortiça */
+.cork-frame { padding: 14px; background: var(--grain), var(--wood); box-shadow: 3px 6px 10px var(--shadow), inset 0 0 0 2px rgba(0, 0, 0, .2); }
+.cork {
+  height: 420px; cursor: crosshair;
+  background:
+    radial-gradient(var(--cork-dot) 1px, transparent 1.6px) 0 0 / 9px 9px,
+    radial-gradient(var(--cork-dot) 1.2px, transparent 2px) 4px 5px / 13px 11px,
+    var(--grain), var(--cork);
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, .35);
+}
+.note { display: grid; place-items: center; padding: 16px 10px 8px; text-align: center; font-size: 13px; }
+.hint-note { font-size: 12px; }
+.pin, .pin-drop {
+  position: absolute; width: 16px; height: 16px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle at 35% 35%, #ffb27a, var(--orange) 45%, #9e4a1c);
+  box-shadow: 1px 3px 3px rgba(0, 0, 0, .45);
+}
+.pin { left: calc(50% - 8px); top: -4px; z-index: 1; }
+.pin-drop { translate: -50% -50%; z-index: 5; animation: pin 2.6s ease-out forwards; }
+@keyframes pin {
+  0% { scale: 2.2; opacity: 0; }
+  12% { scale: 1; opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* 03 · scrapbook */
+.scrap {
+  height: 460px;
+  background: radial-gradient(rgba(0, 0, 0, .12) 1px, transparent 1.5px) 0 0 / 14px 14px, var(--grain), var(--scrap);
+  box-shadow: 3px 6px 10px var(--shadow);
+}
+.polaroid {
+  margin: 0; display: flex; flex-direction: column; gap: 6px; padding: 8px;
+  background: var(--grain), #fbf7ee; box-shadow: 2px 5px 8px var(--shadow);
+}
+.polaroid .photo { flex: 1; background: var(--grain), var(--c); }
+.polaroid figcaption { color: #2b2321; font-size: 12px; text-align: center; }
+.washi { opacity: .92; }
+.sticker {
+  position: absolute; display: grid; place-items: center; width: 76px; height: 76px; border-radius: 50%; pointer-events: none;
+  background: var(--grain), var(--orange); color: var(--black); font: 26px/1 var(--display); box-shadow: 1px 3px 4px var(--shadow);
+}
+.scribble { position: absolute; overflow: visible; pointer-events: none; }
+.scribble path { fill: none; stroke: var(--text); stroke-width: 2.5; stroke-linecap: round; opacity: .6; }
+
+/* 04 · caixa de papelão */
+.box-wrap { position: relative; margin-top: 70px; }
+.flap { position: absolute; top: -56px; width: 50%; height: 60px; background: var(--grain), var(--box-lt); pointer-events: none; }
+.flap.left { left: -3%; clip-path: polygon(0 0, 92% 30%, 100% 100%, 6% 100%); }
+.flap.right { right: -3%; clip-path: polygon(8% 30%, 100% 0, 94% 100%, 0 100%); }
+.box {
+  height: 480px; overflow: hidden;
+  background:
+    linear-gradient(var(--box-dk), transparent 70px),
+    repeating-linear-gradient(90deg, transparent 0 7px, rgba(0, 0, 0, .05) 7px 9px),
+    var(--grain), var(--box);
+  box-shadow: 3px 8px 12px var(--shadow), inset 0 -16px 0 var(--box-dk), inset 18px 0 22px -14px rgba(0, 0, 0, .4), inset -18px 0 22px -14px rgba(0, 0, 0, .4);
+}
+.tape-strip { position: absolute; left: 30%; top: -3px; width: 34%; height: calc(100% + 6px); background: var(--tape); pointer-events: none; }
+.stamp {
+  position: absolute; right: 6%; bottom: 40px; padding: 4px 14px 2px; border: 3px solid var(--orange); pointer-events: none;
+  color: var(--orange); font: 34px/1 var(--display); rotate: -8deg; opacity: .85;
+}
+
+/* ---------- rodapé ---------- */
+.footer { margin-top: clamp(80px, 12vw, 140px); padding: 90px 0 36px; }
+.footer-strip { padding: 16px 22px 14px; }
+.links { display: flex; flex-wrap: wrap; gap: 8px 22px; color: var(--cream); font-size: 14px; }
+.links a { text-underline-offset: 3px; }
+.links a:hover { color: var(--orange); }
+
+@media (max-width: 640px) {
+  .page { padding-inline: 16px; }
+  .notebook { height: 380px; }
+  .swatch { --w: 15%; }
+  .swatch .ink { font-size: 10px; margin-left: 0; padding: 0 3px; }
+  .note { font-size: 11px; padding-inline: 4px; }
+  .hint-note { --x: 56% !important; --w: 38% !important; --h: 84px !important; font-size: 10px; }
+  .cork { height: 400px; }
+  .scrap { height: 420px; }
+  .box { height: 420px; }
+  .sticker { width: 56px; height: 56px; font-size: 20px; }
+  .stamp { font-size: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pin-drop { animation: none; }
+}
