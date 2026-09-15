@@ -275,6 +275,11 @@ button { font: inherit; color: inherit; }
 
 @media (max-width: 640px) {
   .page { padding-inline: 16px; }
+  /* O comando inteiro numa linha: no celular o botão de copiar fica só com o ícone. */
+  .install { font-size: 13px; gap: 10px; padding: 10px 10px 10px 14px; }
+  .install code { white-space: nowrap; }
+  .copy { padding: 8px 10px; }
+  .copy [data-i18n] { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .notebook { height: 380px; }
   .stage .swatch { width: 16.5%; padding: 4px; gap: 4px; }
   .swatch .chip { height: 20px; }
