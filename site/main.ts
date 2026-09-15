@@ -100,6 +100,41 @@ function cat(stage: HTMLElement, opts: KittenOptions): Kitten {
 
 const at = (stage: HTMLElement, fraction: number): number => stage.clientWidth * fraction;
 
+/** Papel, cor da letra, contorno, giro e desnível de cada recorte do título, em ciclo. */
+const LETTER_LOOKS: readonly (readonly [string, string, string | null, number, number])[] = [
+  ['var(--orange)', 'var(--cream)', 'var(--ink)', -5, 6],
+  ['var(--black)', 'var(--cream)', null, 3, -4],
+  ['var(--cream)', 'var(--orange)', 'var(--ink)', -2, 10],
+  ['var(--orange)', 'var(--black)', null, 4, 0],
+  ['var(--cream)', 'var(--black)', null, -4, 8],
+  ['var(--black)', 'var(--orange)', 'var(--ink)', 2, -2],
+  ['var(--orange)', 'var(--cream)', 'var(--ink)', -3, 6],
+  ['var(--cream)', 'var(--orange)', 'var(--ink)', 3, -3],
+];
+
+/** Monta o título em letras recortadas: KITTENS em inglês, GATINHOS em português. */
+function title(l: Lang): void {
+  const h1 = document.querySelector<HTMLElement>('.title');
+  if (!h1) return;
+  const word = l === 'pt' ? 'GATINHOS' : 'KITTENS';
+  if (h1.dataset.word === word) return;
+  h1.dataset.word = word;
+  h1.setAttribute('aria-label', word.toLowerCase());
+  h1.replaceChildren(
+    ...[...word].map((char, i) => {
+      const [c, fg, line, r, dy] = LETTER_LOOKS[i % LETTER_LOOKS.length]!;
+      const span = document.createElement('span');
+      span.className = 'cut letter';
+      span.dataset.kittenPlatform = '';
+      span.setAttribute('aria-hidden', 'true');
+      span.style.cssText = `--c: ${c}; --fg: ${fg}; --r: ${r}deg; --dy: ${dy}px${line ? `; --line: ${line}` : ''}`;
+      span.textContent = char;
+      return span;
+    }),
+  );
+  tear(h1);
+}
+
 function hero(): void {
   const stage = byId('hero');
   cat(stage, { coat: 'calico', name: 'Mingau', x: at(stage, 0.2) });
@@ -264,6 +299,7 @@ if (!new URLSearchParams(location.search).has('capture')) grain();
 paintIcons();
 tear();
 languageTags();
+onLang(title);
 themeButton();
 copyButtons();
 coats();
