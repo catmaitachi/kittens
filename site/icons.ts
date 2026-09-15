@@ -203,22 +203,45 @@ const ICONS = {
 
 export type IconName = keyof typeof ICONS;
 
+/**
+ * Desenha o ícone numa caixa quadrada com o desenho centralizado. As grades têm tamanhos e
+ * margens diferentes; aparar as linhas e colunas vazias e centralizar no quadrado faz todos
+ * ocuparem o mesmo espaço e ficarem no meio de botões e selos.
+ */
 export function iconSvg(name: IconName): string {
-  const rows = ICONS[name];
-  const h = rows.length;
-  const w = Math.max(...rows.map((r) => r.length));
+  const grid = ICONS[name];
+  const lit = (r: string, x: number): boolean => r[x] === '#';
+  const rows = grid.map((r, y) => ({ r, y })).filter(({ r }) => r.includes('#'));
+  const top = rows[0]!.y;
+  const bottom = rows[rows.length - 1]!.y;
+  const width = Math.max(...grid.map((r) => r.length));
+  let left = width;
+  let right = 0;
+  for (const { r } of rows) {
+    for (let x = 0; x < r.length; x++) {
+      if (!lit(r, x)) continue;
+      left = Math.min(left, x);
+      right = Math.max(right, x);
+    }
+  }
+  const w = right - left + 1;
+  const h = bottom - top + 1;
+  const size = Math.max(w, h);
+  const ox = (size - w) / 2 - left;
+  const oy = (size - h) / 2 - top;
+
   let rects = '';
-  rows.forEach((row, y) => {
+  for (const { r, y } of rows) {
     // Junta pixels vizinhos da mesma linha num retângulo só.
     let x = 0;
-    while (x < row.length) {
-      if (row[x] !== '#') { x++; continue; }
+    while (x < r.length) {
+      if (!lit(r, x)) { x++; continue; }
       const start = x;
-      while (row[x] === '#') x++;
-      rects += `<rect x="${start}" y="${y}" width="${x - start}" height="1"/>`;
+      while (lit(r, x)) x++;
+      rects += `<rect x="${start + ox}" y="${y + oy}" width="${x - start}" height="1"/>`;
     }
-  });
-  return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">${rects}</svg>`;
+  }
+  return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">${rects}</svg>`;
 }
 
 /** Troca cada `<i data-icon="...">` pelo SVG do ícone. */

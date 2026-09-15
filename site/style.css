@@ -80,8 +80,9 @@ button { font: inherit; color: inherit; }
 
 /* ---------- botões ---------- */
 /* Todo botão da página tem borda, sombra dura e afunda ao clicar, como uma tecla de papelão. */
-.icon { display: inline-grid; place-items: center; line-height: 0; }
-.icon svg { width: auto; height: 1em; }
+.icon { display: inline-grid; place-items: center; flex: none; line-height: 0; }
+/* Os SVGs são quadrados com o desenho no meio (ver icons.ts): basta dar o mesmo lado. */
+.icon svg { display: block; width: var(--icon, 1em); height: var(--icon, 1em); }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 8px 14px; border: 2px solid var(--btn-edge); cursor: pointer; text-decoration: none;
@@ -91,14 +92,15 @@ button { font: inherit; color: inherit; }
 }
 .btn:hover { translate: -1px -1px; box-shadow: 4px 4px 0 var(--btn-shadow); }
 .btn:active, .btn[aria-pressed="true"] { translate: 2px 2px; box-shadow: 1px 1px 0 var(--btn-shadow); }
-.btn .icon svg { height: 14px; }
+.btn .icon { --icon: 14px; }
 
 .switch { display: flex; align-items: stretch; box-shadow: 3px 3px 0 var(--btn-shadow); }
 .switch-icon {
-  display: grid; place-items: center; padding: 0 10px; border: 2px solid var(--btn-edge); border-right: 0;
+  /* Sem borda à direita (ela é do botão PT); 2px a mais de respiro compensam e o globo fica no meio. */
+  display: grid; place-items: center; padding: 0 12px 0 10px; border: 2px solid var(--btn-edge); border-right: 0;
   background: var(--code-bg); color: var(--cream);
 }
-.switch-icon svg { height: 16px; }
+.switch-icon .icon { --icon: 16px; }
 .switch .btn { box-shadow: none; font: 22px/1 var(--display); padding: 6px 14px 4px; min-width: 52px; }
 .switch .btn + .btn { border-left: 0; }
 .switch .btn:hover { translate: none; box-shadow: none; background-color: #fff; }
@@ -165,7 +167,7 @@ button { font: inherit; color: inherit; }
 .swatch .chip { display: block; width: 100%; height: 30px; background: var(--grain), var(--c); border: 2px solid var(--btn-edge); }
 .swatch .name { font-size: 12px; }
 .swatch .check { position: absolute; top: -9px; right: -9px; padding: 4px; border: 2px solid var(--btn-edge); background: var(--orange); color: var(--black); visibility: hidden; }
-.swatch .check svg { height: 10px; }
+.swatch .check { --icon: 10px; }
 .swatch[aria-pressed="true"] { background: var(--grain), var(--orange); cursor: default; }
 .swatch[aria-pressed="true"] .check { visibility: visible; background: var(--cream); }
 /* 02 · mural de cortiça */
@@ -251,7 +253,7 @@ button { font: inherit; color: inherit; }
   display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; font-size: 12px;
   background: rgba(246, 236, 217, .08); border: 1px solid rgba(246, 236, 217, .22);
 }
-.badges .icon svg { height: 12px; color: var(--orange); }
+.badges .icon { --icon: 12px; color: var(--orange); }
 .footer-col h3 { margin: 4px 0 18px; font: 30px/1 var(--display); font-weight: 400; color: var(--orange); }
 .footer-col ul { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
 .footer-col a { display: inline-flex; align-items: center; gap: 12px; color: var(--cream); text-decoration: none; font-size: 14px; }
@@ -259,7 +261,7 @@ button { font: inherit; color: inherit; }
   flex: none; display: grid; place-items: center; width: 30px; height: 30px;
   background: rgba(246, 236, 217, .08); border: 1px solid rgba(246, 236, 217, .22);
 }
-.footer-col a .icon svg { height: 13px; }
+.footer-col a .icon { --icon: 14px; }
 .footer-col a:hover { color: var(--orange); }
 .footer-col a:hover .icon { background: var(--orange); color: var(--black); border-color: var(--orange); }
 .footer-bottom {
