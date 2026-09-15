@@ -7,7 +7,7 @@
  *   </section>
  *
  * Atributos: coat, scale, speed, name, platforms, interactive, summon (dois cliques
- * chamam o gato), nudge, seed, phrases ("miau!|prrr"), container (seletor de um
+ * chamam o gato), nudge, seed, phrases ("meow!|prrr"), container (seletor de um
  * ancestral; padrão = o pai).
  * Os eventos saem como `kitten:statechange`, `kitten:meow`, `kitten:land`... e borbulham.
  */

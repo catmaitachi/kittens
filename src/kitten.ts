@@ -19,7 +19,7 @@ import { adoptStyles } from './styles';
 import { joinContainer, petsIn, World, type Pet, type Surface, type Wall } from './world';
 
 export interface KittenOptions {
-  /** Pelagem: `'calico'` (a original), `'laranja'`, `'preto'`, `'cinza'` ou uma paleta própria. */
+  /** Pelagem: `'calico'` (a original), `'orange'`, `'black'`, `'gray'`, `'siamese'` ou uma paleta própria. */
   coat?: Coat;
   /** Tamanho de cada pixel da arte, em px CSS. Inteiros deixam a arte nítida. Padrão: 3. */
   scale?: number;
@@ -74,7 +74,7 @@ const RISE_OF_STAGE = 0.62;
 const SPAN_OF_STAGE = 0.42;
 /** Teto absoluto, para palcos gigantes não virarem pulo de foguete (px CSS). */
 const MAX_REACH = 900;
-const DEFAULT_PHRASES = ['miau!', 'mrrp?', 'miau~', 'prrr...', 'nhac!', 'mia?'];
+const DEFAULT_PHRASES = ['meow!', 'mrrp?', 'meow~', 'prrr...', 'nom!', 'mew?'];
 
 const clamp = (v: number, min: number, max: number): number => Math.min(max, Math.max(min, v));
 
@@ -550,7 +550,7 @@ export class Kitten extends EventTarget implements CatBody, Tickable, Pet {
   }
 
   say(text?: string): void {
-    const phrase = text ?? this.nextPhrase ?? this.rng.pick(this.phrases) ?? 'miau!';
+    const phrase = text ?? this.nextPhrase ?? this.rng.pick(this.phrases) ?? 'meow!';
     this.nextPhrase = undefined;
     this.bubble?.remove();
     const bubble = document.createElement('div');

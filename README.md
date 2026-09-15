@@ -7,12 +7,12 @@ sem você programar um passo sequer.
 <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/kittens.gif" alt="Um gato calico anda, pula numa prateleira, corre e escala uma coluna enquanto outro cochila e um terceiro abana o rabo" width="408">
 
 - **Sem dependências** e leve: ~18 kB gzip, um único `requestAnimationFrame` para todos.
-- **Web Component** (`<kitten-pet>`) ou **classe** (`new Kitten(elemento)`).
+- **Web Component** (`<kitten-pet>`) ou **classe** (`new Kitten(element)`).
 - Eles leem o seu layout de verdade: pisam no topo dos seus cards e botões, escalam as
   laterais deles e voltam a se ajustar quando a página muda.
 - Respeita `prefers-reduced-motion`.
 
-![Pelagens: calico, laranja, cinza, preto e siamês](https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/pelagens.png)
+![Pelagens: calico, laranja, cinza, preto e siamês](https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/coats.png)
 
 ## Instalar
 
@@ -25,13 +25,13 @@ npm i kittens
 | Quero…                         | Faço assim                                                                 |
 | ------------------------------ | -------------------------------------------------------------------------- |
 | Um gato numa `div`             | `<kitten-pet></kitten-pet>` dentro dela (ou `new Kitten(div)`)              |
-| Escolher a pelagem             | `<kitten-pet coat="laranja">`                                              |
+| Escolher a pelagem             | `<kitten-pet coat="orange">`                                              |
 | Um gato maior                  | `<kitten-pet scale="4">` (px por pixel da arte)                            |
 | Chamar o gato com dois cliques | `<kitten-pet summon>`                                                      |
 | Limitar onde ele pisa          | `<kitten-pet platforms=".card, img">`                                      |
-| Pedir uma ação agora           | `gato.do('jump')`                                                          |
-| Saber o que ele está fazendo   | `gato.state` ou o evento `statechange`                                     |
-| Tirar o gato da página         | `gato.destroy()`                                                           |
+| Pedir uma ação agora           | `cat.do('jump')`                                                            |
+| Saber o que ele está fazendo   | `cat.state` ou o evento `statechange`                                     |
+| Tirar o gato da página         | `cat.destroy()`                                                             |
 
 ### Web component
 
@@ -54,20 +54,20 @@ O gato vive no elemento **pai** da tag (ou no ancestral que você apontar com
 ```ts
 import { Kitten } from 'kittens';
 
-const gato = new Kitten(document.querySelector('#area')!, {
-  coat: 'laranja',
+const cat = new Kitten(document.querySelector('#area')!, {
+  coat: 'orange',
   scale: 3,
   summon: true,
 });
 
-gato.addEventListener('statechange', (e) => console.log(e.detail.state));
+cat.addEventListener('statechange', (e) => console.log(e.detail.state));
 ```
 
 ## Opções
 
 | Opção         | Padrão     | O que faz                                                                 |
 | ------------- | ---------- | ------------------------------------------------------------------------- |
-| `coat`        | `'calico'` | `calico`, `laranja`, `cinza`, `preto`, `siames` ou uma paleta sua          |
+| `coat`        | `'calico'` | `calico`, `orange`, `gray`, `black`, `siamese` ou uma paleta sua        |
 | `scale`       | `3`        | Tamanho de cada pixel da arte, em px. Inteiros mantêm a arte nítida        |
 | `speed`       | `1`        | Multiplicador da velocidade de andar e correr                             |
 | `platforms`   | `'auto'`   | Onde ele pode pisar: `'auto'` ou um seletor CSS                           |
@@ -75,22 +75,22 @@ gato.addEventListener('statechange', (e) => console.log(e.detail.state));
 | `summon`      | `false`    | Dois cliques no container chamam o gato até o ponto clicado               |
 | `nudge`       | `true`     | Os elementos balançam de leve quando levam patada                         |
 | `behaviors`   | —          | Peso de cada comportamento; `0` desliga (ex.: `{ nap: 2, climb: 0 }`)      |
-| `phrases`     | `miau!`, … | Frases do balão de fala                                                   |
+| `phrases`     | `meow!`, … | Frases do balão de fala                                                   |
 | `name`        | `'Kitten'` | Nome do gato (vai nos eventos)                                            |
 | `seed`        | aleatória  | Mesma semente, mesmas escolhas — bom para testes                          |
 | `x`           | aleatório  | Posição inicial no chão                                                   |
 
 No web component, cada opção vira um atributo de mesmo nome
-(`<kitten-pet coat="preto" scale="2" summon>`).
+(`<kitten-pet coat="black" scale="2" summon>`).
 
 ## Métodos e leituras
 
 | Chamada             | O que faz                                                            |
 | ------------------- | -------------------------------------------------------------------- |
-| `do(acao)`          | Pede uma ação agora (veja a tabela abaixo)                           |
+| `do(action)`        | Pede uma ação agora (veja a tabela abaixo)                           |
 | `meow('oi!')`       | Mia com um balão de fala                                             |
 | `summonTo(x, y)`    | Chama o gato para um ponto do container                              |
-| `setCoat('preto')`  | Troca a pelagem sem recriar o gato                                   |
+| `setCoat('black')`  | Troca a pelagem sem recriar o gato                                   |
 | `pause()`/`resume()`| Congela e retoma a animação                                          |
 | `destroy()`         | Remove o gato e solta tudo                                           |
 | `state`, `energy`   | O que ele faz agora e o quanto está disposto (0 a 1)                 |

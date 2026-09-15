@@ -176,13 +176,13 @@ export const PALETTES = {
   /** O gato original: branco com manchas laranja e grafite, olhos âmbar. */
   calico: { ...BASE_PALETTE, k: '#111114', s: '#6f7173', w: '#e1e6e6', g: '#c4c7c8', d: '#1e2a32', o: '#d69058', a: '#dca157', p: '#e59aa8' },
   /** Laranjinha bicolor: laranja em cima com listras discretas, branco embaixo. */
-  laranja: { ...BASE_PALETTE, k: '#35200f', s: '#b8834b', w: '#e79a51', g: '#d1853d', d: '#a85c22', o: '#e79a51', a: '#8cbf4f', p: '#ee9aa4' },
+  orange: { ...BASE_PALETTE, k: '#35200f', s: '#b8834b', w: '#e79a51', g: '#d1853d', d: '#a85c22', o: '#e79a51', a: '#8cbf4f', p: '#ee9aa4' },
   /** Pretinho: preto inteiro, só os olhos amarelos aparecem. */
-  preto: { ...BASE_PALETTE, k: '#08080b', s: '#1b1b22', w: '#33333d', g: '#2b2b35', d: '#24242e', o: '#2f2f39', a: '#e8cb4a', p: '#c48a96' },
+  black: { ...BASE_PALETTE, k: '#08080b', s: '#1b1b22', w: '#33333d', g: '#2b2b35', d: '#24242e', o: '#2f2f39', a: '#e8cb4a', p: '#c48a96' },
   /** Cinza liso: um tom só, com listras bem discretas caindo do lombo. */
-  cinza: { ...BASE_PALETTE, k: '#171a1f', s: '#61676d', w: '#bcc5cc', g: '#a7b2ba', d: '#68737e', o: '#bcc5cc', a: '#7cc6e4', p: '#e39aa8' },
+  gray: { ...BASE_PALETTE, k: '#171a1f', s: '#61676d', w: '#bcc5cc', g: '#a7b2ba', d: '#68737e', o: '#bcc5cc', a: '#7cc6e4', p: '#e39aa8' },
   /** Siamês: creme com pontas escuras, máscara no rosto e degradê nas costas. */
-  siames: { ...BASE_PALETTE, k: '#241a14', s: '#a3907c', w: '#f7f0e1', g: '#e7dac4', d: '#6b4b37', o: '#dccbb2', a: '#63b2dd', p: '#dda3ad' },
+  siamese: { ...BASE_PALETTE, k: '#241a14', s: '#a3907c', w: '#f7f0e1', g: '#e7dac4', d: '#6b4b37', o: '#dccbb2', a: '#63b2dd', p: '#dda3ad' },
 } satisfies Record<string, Palette>;
 
 export type PaletteName = keyof typeof PALETTES;
@@ -193,7 +193,7 @@ export type PaletteName = keyof typeof PALETTES;
  */
 export const PATTERNS: Partial<Record<PaletteName, PatternFn>> = {
   calico: calicoPattern,
-  laranja: shorthair({ stripe: '#a85c22', strength: 0.34, belly: '#fdfaf5' }),
-  cinza: shorthair({ stripe: '#68737e', strength: 0.42 }),
-  siames: siamesePattern,
+  orange: shorthair({ stripe: '#a85c22', strength: 0.34, belly: '#fdfaf5' }),
+  gray: shorthair({ stripe: '#68737e', strength: 0.42 }),
+  siamese: siamesePattern,
 };
