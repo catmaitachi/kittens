@@ -4,6 +4,24 @@ All notable changes to this project are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [1.0.2] - 2026-09-15
+
+### Fixed
+
+- In `auto` mode, elements whose color has a zero blue channel (red, orange, yellow...) were
+  treated as transparent and never became platforms. Only colors with zero alpha count now.
+- On pages with more than 600 elements, anything after the first 600 in document order was
+  ignored, even when it was on screen. The limit now counts accepted platforms instead.
+
+### Changed
+
+- Scrolling the page no longer forces every container's layout to be read again; only
+  scrolling inside the container does (full-page cats still follow the page scroll).
+- Cat layers are marked with `data-kitten-layer` and skipped with a single `closest()`, instead
+  of checking every layer for every element.
+- Removed dead code (`World.supportAt`) and duplicate behavior tables in the brain.
+- CI actions updated to their current major versions (no more Node 20 deprecation warnings).
+
 ## [1.0.1] - 2026-09-15
 
 ### Added
@@ -46,6 +64,7 @@ First stable release. From here on, breaking changes only land in a new major ve
 
 - First version published to npm.
 
+[1.0.2]: https://github.com/catmaitachi/kittens/releases/tag/v1.0.2
 [1.0.1]: https://github.com/catmaitachi/kittens/releases/tag/v1.0.1
 [1.0.0]: https://github.com/catmaitachi/kittens/releases/tag/v1.0.0
 [0.1.0]: https://www.npmjs.com/package/@catmaitachi/kittens/v/0.1.0

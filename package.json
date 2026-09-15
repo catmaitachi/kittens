@@ -1,6 +1,6 @@
 {
   "name": "@catmaitachi/kittens",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Pixel-art kittens that live inside any element of your page: they walk, run, jump onto elements, climb walls, play, groom and sleep.",
   "keywords": [
     "pet",
