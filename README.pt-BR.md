@@ -12,7 +12,7 @@
 <img src="https://img.shields.io/badge/TypeScript-tipos_inclusos-e07b39?style=flat-square&labelColor=2b2321" alt="tipos de TypeScript inclusos">
 <img src="https://img.shields.io/badge/licença-MIT-e07b39?style=flat-square&labelColor=2b2321" alt="licença MIT">
 
-**[Ver os gatos ao vivo](https://catmaitachi.github.io/kittens/)** · [English](README.md) · [npm](https://www.npmjs.com/package/@catmaitachi/kittens) · [Relatar um problema](https://github.com/catmaitachi/kittens/issues)
+**[Ver os gatos ao vivo](https://luuspz.dev/kittens/)** · [English](README.md) · [npm](https://www.npmjs.com/package/@catmaitachi/kittens) · [Relatar um problema](https://github.com/catmaitachi/kittens/issues)
 
 </div>
 
@@ -21,7 +21,7 @@
 <div align="center">
 
 Os gatos andam, correm, pulam nos seus cards, escalam paredes, brincam, dormem e se limpam sozinhos.<br>
-A [landing page](https://catmaitachi.github.io/kittens/) mostra tudo funcionando. Este README é a referência para usar.
+A [landing page](https://luuspz.dev/kittens/) mostra tudo funcionando. Este README é a referência para usar.
 
 </div>
 

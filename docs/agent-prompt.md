@@ -2,7 +2,7 @@ You are helping me add kittens to a web project. Read this before writing code.
 
 ## What it is
 
-`@catmaitachi/kittens` (npm) draws pixel-art cats inside any HTML element. The cats read the real layout and behave on their own: they walk, run, jump onto elements, climb walls, play, groom and sleep. No dependencies, about 18 kB gzipped, TypeScript types included. Docs: https://github.com/catmaitachi/kittens · Live demo: https://catmaitachi.github.io/kittens/
+`@catmaitachi/kittens` (npm) draws pixel-art cats inside any HTML element. The cats read the real layout and behave on their own: they walk, run, jump onto elements, climb walls, play, groom and sleep. No dependencies, about 18 kB gzipped, TypeScript types included. Docs: https://github.com/catmaitachi/kittens · Live demo: https://luuspz.dev/kittens/
 
 ## Install
 
