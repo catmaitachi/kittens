@@ -136,11 +136,9 @@ pega-pega e deitam lado a lado. É só criar mais de um.
 
 | Comando              | O que faz                                              |
 | -------------------- | ------------------------------------------------------ |
-| `npm run dev`        | Demo em `/` e playground em `/playground.html`          |
 | `npm run build`      | Biblioteca em `dist/` (ESM + UMD + tipos)              |
 | `npm run typecheck`  | TypeScript estrito, sem emitir nada                    |
 | `npm run sprites`    | Valida a pixel art e reexporta os PNGs de `assets/`    |
-| `npm run build:demo` | Demo e playground estáticos em `dist-demo/`            |
 
 ## Licença
 
