@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use kittens in your work, please cite it using the metadata below."
+type: software
+title: "kittens"
+abstract: >-
+  Pixel-art kittens that live inside any element of a web page. They read the real
+  layout to walk, run, jump onto elements, climb walls, play, groom and sleep on their
+  own. Ships as a dependency-free Web Component and TypeScript class.
+authors:
+  - family-names: "Spiazzi"
+    given-names: "Lucas"
+    alias: "catmaitachi"
+version: "0.1.0"
+license: MIT
+repository-code: "https://github.com/catmaitachi/kittens"
+url: "https://catmaitachi.github.io/kittens/"
+keywords:
+  - pixel art
+  - web component
+  - virtual pet
+  - cat
+  - typescript
