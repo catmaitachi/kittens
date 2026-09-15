@@ -42,7 +42,10 @@
     "./dist/kittens.umd.cjs"
   ],
   "scripts": {
+    "dev": "vite",
     "build": "vite build && tsc -p tsconfig.build.json",
+    "build:site": "vite build --mode site",
+    "preview:site": "vite preview --mode site",
     "typecheck": "tsc -p tsconfig.json && tsc -p scripts/tsconfig.json",
     "sprites": "node --experimental-strip-types --no-warnings=ExperimentalWarning scripts/export-sprites.ts"
   },

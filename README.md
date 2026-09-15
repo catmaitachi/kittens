@@ -136,6 +136,8 @@ pega-pega e deitam lado a lado. É só criar mais de um.
 
 | Comando              | O que faz                                              |
 | -------------------- | ------------------------------------------------------ |
+| `npm run dev`        | Landing page em desenvolvimento (pasta `site/`)        |
+| `npm run build:site` | Landing page estática em `dist-site/`                  |
 | `npm run build`      | Biblioteca em `dist/` (ESM + UMD + tipos)              |
 | `npm run typecheck`  | TypeScript estrito, sem emitir nada                    |
 | `npm run sprites`    | Valida a pixel art e reexporta os PNGs de `assets/`    |
