@@ -1,6 +1,7 @@
 export type Lang = 'pt' | 'en';
 
 const pt = {
+  brand: 'Gatinhos',
   'lang.label': 'Idioma',
   'theme.system': 'tema: sistema',
   'theme.light': 'tema: claro',
@@ -39,11 +40,13 @@ const pt = {
   'footer.madeBy': 'Feito por Lucas Spiazzi',
   'footer.credits': 'Inspirado no VS Code Pets',
   'footer.font': 'Fonte Jersey 10',
+  'footer.claude': 'Feito com Claude',
   'footer.copyright': '© 2026 Lucas Spiazzi. Código aberto sob a licença MIT.',
   'footer.top': 'voltar ao topo',
 };
 
 const en: Record<keyof typeof pt, string> = {
+  brand: 'Kittens',
   'lang.label': 'Language',
   'theme.system': 'theme: system',
   'theme.light': 'theme: light',
@@ -82,6 +85,7 @@ const en: Record<keyof typeof pt, string> = {
   'footer.madeBy': 'Made by Lucas Spiazzi',
   'footer.credits': 'Inspired by VS Code Pets',
   'footer.font': 'Jersey 10 typeface',
+  'footer.claude': 'Made with Claude',
   'footer.copyright': '© 2026 Lucas Spiazzi. Open source under the MIT license.',
   'footer.top': 'back to top',
 };
@@ -118,6 +122,7 @@ export function setLang(next: Lang): void {
     // Sem storage (aba privada etc.): a escolha vale só nesta visita.
   }
   document.documentElement.lang = next === 'pt' ? 'pt-BR' : 'en';
+  document.title = t('brand');
   for (const el of document.querySelectorAll<HTMLElement>('[data-i18n]')) {
     el.textContent = t(el.dataset.i18n as Key);
   }
