@@ -4,6 +4,20 @@ All notable changes to this project are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [1.0.1] - 2026-09-15
+
+### Added
+
+- `docs/agent-prompt.md`: a ready-to-paste prompt that explains the library, its API and how
+  to add it to a project, for AI coding agents. The landing page has a button next to the
+  install command that copies it, and both READMEs link to it.
+- The package is also published to GitHub Packages, so it shows up on the repository page.
+
+### Changed
+
+- The release workflow can be run by hand for an existing tag, and re-running it no longer
+  fails when the GitHub release or the npm version already exists.
+
 ## [1.0.0] - 2026-09-15
 
 First stable release. From here on, breaking changes only land in a new major version.
@@ -32,5 +46,6 @@ First stable release. From here on, breaking changes only land in a new major ve
 
 - First version published to npm.
 
+[1.0.1]: https://github.com/catmaitachi/kittens/releases/tag/v1.0.1
 [1.0.0]: https://github.com/catmaitachi/kittens/releases/tag/v1.0.0
 [0.1.0]: https://www.npmjs.com/package/@catmaitachi/kittens/v/0.1.0
