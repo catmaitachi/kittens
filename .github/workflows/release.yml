@@ -1,20 +1,33 @@
 name: Release
 
-# Publica no npm quando uma tag de versão (v0.1.1, v1.0.0...) chega ao GitHub.
-# Usa trusted publishing: o npm confia neste workflow pelo OIDC, sem token guardado.
+# Publica uma versão quando uma tag (v1.0.1, v2.0.0...) chega ao GitHub, ou à mão pela aba
+# Actions, informando a tag. Publica em dois lugares:
+#   - npm, com trusted publishing (o npm confia neste workflow pelo OIDC, sem token guardado);
+#   - GitHub Packages, que é o que aparece em "Packages" na página do repositório.
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag já existente para publicar (ex.: v1.0.0)'
+        required: true
 
 permissions:
   contents: write
   id-token: write
+  packages: write
+
+env:
+  TAG: ${{ inputs.tag || github.ref_name }}
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -25,25 +38,36 @@ jobs:
       - name: Confere se a tag bate com a versão do package.json
         run: |
           version="$(node -p "require('./package.json').version")"
-          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
-            echo "A tag $GITHUB_REF_NAME não bate com a versão $version do package.json." >&2
+          if [ "v$version" != "$TAG" ]; then
+            echo "A tag $TAG não bate com a versão $version do package.json." >&2
             exit 1
           fi
+          echo "NAME=$(node -p "require('./package.json').name")" >> "$GITHUB_ENV"
+          echo "VERSION=$version" >> "$GITHUB_ENV"
 
       - name: Cria a release no GitHub
         env:
           GH_TOKEN: ${{ github.token }}
-        # Numa reexecução a release já existe; aí segue direto para o npm.
-        run: gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || gh release create "$GITHUB_REF_NAME" --generate-notes --verify-tag
+        # Numa reexecução a release já existe; aí segue direto para a publicação.
+        run: gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --generate-notes --verify-tag
 
-      # Se a versão já foi publicada à mão, não tenta de novo.
       # prepublishOnly roda typecheck e build antes de empacotar.
       - name: Publica no npm
         run: |
-          name="$(node -p "require('./package.json').name")"
-          version="$(node -p "require('./package.json').version")"
-          if npm view "$name@$version" version >/dev/null 2>&1; then
-            echo "$name@$version já está no npm, nada a publicar."
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "$NAME@$VERSION já está no npm, nada a publicar."
           else
             npm publish --provenance --access public
+          fi
+
+      - name: Publica no GitHub Packages
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
+        run: |
+          registry=https://npm.pkg.github.com
+          npm config set "//npm.pkg.github.com/:_authToken" "$NODE_AUTH_TOKEN"
+          if npm view "$NAME@$VERSION" version --registry "$registry" >/dev/null 2>&1; then
+            echo "$NAME@$VERSION já está no GitHub Packages, nada a publicar."
+          else
+            npm publish --registry "$registry"
           fi
