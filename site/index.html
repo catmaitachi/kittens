@@ -20,14 +20,15 @@
 <body>
   <div class="page">
     <nav class="top">
-      <div class="lang" role="group" aria-label="Idioma" data-i18n-label="lang.label">
-        <button class="tag" type="button" data-lang="pt">PT</button>
-        <button class="tag" type="button" data-lang="en">EN</button>
+      <div class="switch" role="group" aria-label="Idioma" data-i18n-label="lang.label">
+        <span class="switch-icon" aria-hidden="true"><i class="icon" data-icon="globe"></i></span>
+        <button class="btn" type="button" data-lang="pt">PT</button>
+        <button class="btn" type="button" data-lang="en">EN</button>
       </div>
-      <button class="theme" type="button" id="theme"></button>
+      <button class="btn theme" type="button" id="theme"><i class="icon" data-icon="moon" aria-hidden="true"></i><span></span></button>
     </nav>
 
-    <header class="hero">
+    <header class="hero" id="top">
       <div class="hero-stage stage" id="hero">
         <h1 class="title" aria-label="kittens">
           <span class="cut letter" data-kitten-platform aria-hidden="true" style="--c: var(--orange); --fg: var(--cream); --line: var(--ink); --r: -5deg; --dy: 6px">K</span>
@@ -44,14 +45,14 @@
 
       <div class="install cut" style="--c: var(--cream)">
         <code class="ink">npm i kittens</code>
-        <button class="copy" type="button" data-copy="npm i kittens" data-i18n="copy">copiar</button>
+        <button class="btn copy" type="button" data-copy="npm i kittens"><i class="icon" data-icon="copy" aria-hidden="true"></i><span data-i18n="copy">copiar</span></button>
       </div>
 
       <p class="hint" data-i18n="hero.hint">Eles já estão andando nas letras. Clique num deles ou arraste.</p>
     </header>
 
     <main>
-      <section class="demo" aria-labelledby="coats-title">
+      <section class="demo" id="coats-demo" aria-labelledby="coats-title">
         <div class="demo-head">
           <span class="num">01</span>
           <div>
@@ -64,11 +65,11 @@
           <i class="tape" style="right: -20px; top: 12px; rotate: 32deg"></i>
           <div class="sheet-shadow" aria-hidden="true"></div>
           <div class="notebook stage torn" id="coats" data-amp="7">
-            <button class="cut swatch" type="button" data-kitten-platform data-coat="calico" style="--x: 10%; --y: 16%; --c: linear-gradient(135deg, #e07b39 0 34%, #f6ecd9 34% 66%, #2b2321 66%)"><span class="ink">calico</span></button>
-            <button class="cut swatch" type="button" data-kitten-platform data-coat="laranja" style="--x: 27%; --y: 22%; --c: #e79a51"><span class="ink">laranja</span></button>
-            <button class="cut swatch" type="button" data-kitten-platform data-coat="cinza" style="--x: 44%; --y: 14%; --c: #bcc5cc"><span class="ink">cinza</span></button>
-            <button class="cut swatch" type="button" data-kitten-platform data-coat="preto" style="--x: 61%; --y: 20%; --c: #33333d"><span class="ink">preto</span></button>
-            <button class="cut swatch" type="button" data-kitten-platform data-coat="siames" style="--x: 78%; --y: 15%; --c: linear-gradient(90deg, #6b4b37 0 18%, #f7f0e1 18% 82%, #6b4b37 82%)"><span class="ink">siames</span></button>
+            <button class="btn swatch" type="button" data-kitten-platform data-coat="calico" style="--x: 9%; --y: 14%; --c: linear-gradient(135deg, #e07b39 0 34%, #f6ecd9 34% 66%, #2b2321 66%)"><span class="chip"></span><span class="name">calico</span><i class="icon check" data-icon="check" aria-hidden="true"></i></button>
+            <button class="btn swatch" type="button" data-kitten-platform data-coat="orange" style="--x: 26.5%; --y: 20%; --c: #e79a51"><span class="chip"></span><span class="name">orange</span><i class="icon check" data-icon="check" aria-hidden="true"></i></button>
+            <button class="btn swatch" type="button" data-kitten-platform data-coat="gray" style="--x: 44%; --y: 12%; --c: #bcc5cc"><span class="chip"></span><span class="name">gray</span><i class="icon check" data-icon="check" aria-hidden="true"></i></button>
+            <button class="btn swatch" type="button" data-kitten-platform data-coat="black" style="--x: 61.5%; --y: 18%; --c: #33333d"><span class="chip"></span><span class="name">black</span><i class="icon check" data-icon="check" aria-hidden="true"></i></button>
+            <button class="btn swatch" type="button" data-kitten-platform data-coat="siamese" style="--x: 79%; --y: 13%; --c: linear-gradient(90deg, #6b4b37 0 18%, #f7f0e1 18% 82%, #6b4b37 82%)"><span class="chip"></span><span class="name">siamese</span><i class="icon check" data-icon="check" aria-hidden="true"></i></button>
             <div class="cut" data-kitten-platform style="--x: 52%; --y: 64%; --w: 30%; --h: 24px; --c: var(--orange)"></div>
             <div class="cut" data-kitten-platform style="--x: 14%; --y: 72%; --w: 22%; --h: 24px; --c: var(--black)"></div>
           </div>
@@ -76,7 +77,7 @@
         <pre class="code"><code id="coats-code"></code></pre>
       </section>
 
-      <section class="demo" aria-labelledby="summon-title">
+      <section class="demo" id="summon-demo" aria-labelledby="summon-title">
         <div class="demo-head">
           <span class="num">02</span>
           <div>
@@ -95,7 +96,7 @@
         <pre class="code"><code id="summon-code"></code></pre>
       </section>
 
-      <section class="demo" aria-labelledby="parkour-title">
+      <section class="demo" id="parkour-demo" aria-labelledby="parkour-title">
         <div class="demo-head">
           <span class="num">03</span>
           <div>
@@ -114,7 +115,7 @@
             <figcaption data-i18n="parkour.photo3"></figcaption><div class="photo"></div>
           </figure>
           <div class="cut washi" data-kitten-platform style="--x: 64%; --y: 48%; --w: 4%; --h: 52%; --c: repeating-linear-gradient(45deg, #e07b39 0 10px, #f2a06a 10px 20px)"></div>
-          <span class="sticker" style="left: 84%; top: 70%; rotate: 12deg">miau!</span>
+          <span class="sticker" style="left: 84%; top: 70%; rotate: 12deg" data-i18n="parkour.sticker">miau!</span>
           <svg class="scribble" style="left: 12%; top: 12%" width="160" height="120" aria-hidden="true"><path d="M10 90 C 40 20, 90 20, 130 60 M118 44 L132 62 L110 66"/></svg>
           <svg class="scribble" style="left: 2%; top: 8%" width="60" height="60" aria-hidden="true"><path d="M30 50 C 5 30, 12 8, 30 22 C 48 8, 55 30, 30 50"/></svg>
           <svg class="scribble" style="left: 36%; top: 86%" width="140" height="40" aria-hidden="true"><path d="M10 20 q 10 -16 20 0 t 20 0 t 20 0 t 20 0 t 20 0"/></svg>
@@ -122,7 +123,7 @@
         <pre class="code"><code id="parkour-code"></code></pre>
       </section>
 
-      <section class="demo" aria-labelledby="crowd-title">
+      <section class="demo" id="crowd-demo" aria-labelledby="crowd-title">
         <div class="demo-head">
           <span class="num">04</span>
           <div>
@@ -144,14 +145,55 @@
       </section>
     </main>
 
-    <footer class="footer stage" id="footer">
-      <div class="cut footer-strip" data-kitten-platform style="--c: var(--black); --fg: var(--cream)">
-        <nav class="ink links">
-          <a href="https://github.com/catmaitachi/kittens">GitHub</a>
-          <a href="https://www.npmjs.com/package/kittens">npm</a>
-          <span>MIT © Lucas Spiazzi</span>
-          <span data-i18n="footer.credits">Inspirado no VS Code Pets.</span>
-        </nav>
+    <footer class="footer">
+      <div class="footer-perch stage" id="footer-perch"></div>
+      <div class="cut footer-paper" style="--c: var(--black)">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <p class="footer-logo">kittens</p>
+            <p class="footer-tagline" data-i18n="tagline"></p>
+            <code class="footer-install">npm i kittens</code>
+            <ul class="badges">
+              <li><i class="icon" data-icon="package" aria-hidden="true"></i><span data-i18n="footer.deps"></span></li>
+              <li><i class="icon" data-icon="feather" aria-hidden="true"></i><span>~18 kB gzip</span></li>
+              <li><i class="icon" data-icon="scale" aria-hidden="true"></i><span data-i18n="footer.license"></span></li>
+            </ul>
+          </div>
+
+          <nav class="footer-col" aria-labelledby="footer-project">
+            <h3 id="footer-project" data-i18n="footer.project"></h3>
+            <ul>
+              <li><a href="https://github.com/catmaitachi/kittens"><i class="icon" data-icon="github" aria-hidden="true"></i><span data-i18n="footer.repo"></span></a></li>
+              <li><a href="https://www.npmjs.com/package/kittens"><i class="icon" data-icon="npm" aria-hidden="true"></i><span data-i18n="footer.npm"></span></a></li>
+              <li><a href="https://github.com/catmaitachi/kittens#readme"><i class="icon" data-icon="book" aria-hidden="true"></i><span data-i18n="footer.docs"></span></a></li>
+              <li><a href="https://github.com/catmaitachi/kittens/issues"><i class="icon" data-icon="bug" aria-hidden="true"></i><span data-i18n="footer.issues"></span></a></li>
+            </ul>
+          </nav>
+
+          <nav class="footer-col" aria-labelledby="footer-page">
+            <h3 id="footer-page" data-i18n="footer.page"></h3>
+            <ul>
+              <li><a href="#coats-demo"><i class="icon" data-icon="paw" aria-hidden="true"></i><span data-i18n="coats.title"></span></a></li>
+              <li><a href="#summon-demo"><i class="icon" data-icon="paw" aria-hidden="true"></i><span data-i18n="summon.title"></span></a></li>
+              <li><a href="#parkour-demo"><i class="icon" data-icon="paw" aria-hidden="true"></i><span data-i18n="parkour.title"></span></a></li>
+              <li><a href="#crowd-demo"><i class="icon" data-icon="paw" aria-hidden="true"></i><span data-i18n="crowd.title"></span></a></li>
+            </ul>
+          </nav>
+
+          <div class="footer-col">
+            <h3 data-i18n="footer.creditsTitle"></h3>
+            <ul>
+              <li><a href="https://github.com/catmaitachi"><i class="icon" data-icon="heart" aria-hidden="true"></i><span data-i18n="footer.madeBy"></span></a></li>
+              <li><a href="https://github.com/tonybaloney/vscode-pets"><i class="icon" data-icon="cat" aria-hidden="true"></i><span data-i18n="footer.credits"></span></a></li>
+              <li><a href="https://fonts.google.com/specimen/Jersey+10"><i class="icon" data-icon="type" aria-hidden="true"></i><span data-i18n="footer.font"></span></a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p data-i18n="footer.copyright"></p>
+          <a class="btn to-top" href="#top"><i class="icon" data-icon="arrow" aria-hidden="true"></i><span data-i18n="footer.top"></span></a>
+        </div>
       </div>
     </footer>
   </div>

@@ -1,6 +1,7 @@
 import { Kitten } from '../src/index.ts';
 import type { BehaviorWeights, KittenOptions, PaletteName } from '../src/index.ts';
 import { lang, onLang, setLang, t, type Key, type Lang } from './i18n.ts';
+import { iconSvg, paintIcons } from './icons.ts';
 
 const byId = (id: string): HTMLElement => {
   const el = document.getElementById(id);
@@ -102,7 +103,7 @@ const at = (stage: HTMLElement, fraction: number): number => stage.clientWidth *
 function hero(): void {
   const stage = byId('hero');
   cat(stage, { coat: 'calico', name: 'Mingau', x: at(stage, 0.2) });
-  cat(stage, { coat: 'laranja', name: 'Paçoca', x: at(stage, 0.75) });
+  cat(stage, { coat: 'orange', name: 'Paçoca', x: at(stage, 0.75) });
 }
 
 function coats(): void {
@@ -127,7 +128,7 @@ function coats(): void {
 function summon(): void {
   const stage = byId('summon');
   const cats = [
-    cat(stage, { coat: 'preto', summon: true, x: at(stage, 0.3) }),
+    cat(stage, { coat: 'black', summon: true, x: at(stage, 0.3) }),
     cat(stage, { coat: 'calico', summon: true, x: at(stage, 0.6) }),
   ];
   let last = 0;
@@ -162,7 +163,7 @@ function parkour(): void {
   const stage = byId('parkour');
   const behaviors: BehaviorWeights = { climb: 5, explore: 4, wander: 2, play: 1, idle: 1, social: 1, loaf: 0.2, nap: 0, groom: 0.3, stretch: 0.2 };
   cat(stage, { coat: 'calico', behaviors, x: at(stage, 0.15) });
-  cat(stage, { coat: 'cinza', behaviors, x: at(stage, 0.5) });
+  cat(stage, { coat: 'gray', behaviors, x: at(stage, 0.5) });
   const text = (l: Lang): string =>
     [
       `import { Kitten } from 'kittens';`,
@@ -178,12 +179,12 @@ function parkour(): void {
 
 function crowd(): void {
   const stage = byId('crowd');
-  const all: PaletteName[] = ['calico', 'laranja', 'cinza', 'preto', 'siames'];
+  const all: PaletteName[] = ['calico', 'orange', 'gray', 'black', 'siamese'];
   all.forEach((coat, i) => cat(stage, { coat, x: at(stage, 0.1 + i * 0.19) }));
   const text = (l: Lang): string =>
     [
       l === 'pt' ? '// gatos no mesmo container interagem sozinhos' : '// cats in the same container interact on their own',
-      `for (const coat of ['calico', 'laranja', 'cinza', 'preto', 'siames']) {`,
+      `for (const coat of ['calico', 'orange', 'gray', 'black', 'siamese']) {`,
       `  new Kitten(box, { coat });`,
       `}`,
     ].join('\n');
@@ -192,9 +193,9 @@ function crowd(): void {
 }
 
 function footer(): void {
-  const stage = byId('footer');
+  const stage = byId('footer-perch');
   const sleepy: BehaviorWeights = { nap: 10, loaf: 1.5, groom: 0.4, stretch: 0.3, idle: 0, wander: 0, explore: 0, climb: 0, play: 0, social: 0 };
-  cat(stage, { coat: 'siames', behaviors: sleepy, x: at(stage, 0.7) });
+  cat(stage, { coat: 'siamese', behaviors: sleepy, x: at(stage, 0.7) });
 }
 
 /* ---------- topo: idioma, tema, copiar ---------- */
@@ -217,9 +218,15 @@ const THEME_KEY = 'kittens-site:theme';
 function themeButton(): void {
   const button = byId('theme');
   let theme: Theme = (document.documentElement.dataset.theme as Theme | undefined) ?? 'system';
+  const label = button.querySelector('span');
+  const icon = button.querySelector('.icon');
+  const dark = matchMedia('(prefers-color-scheme: dark)');
   const paint = (): void => {
-    button.textContent = t(`theme.${theme}`);
+    if (label) label.textContent = t(`theme.${theme}`);
+    const showingDark = theme === 'dark' || (theme === 'system' && dark.matches);
+    if (icon) icon.innerHTML = iconSvg(showingDark ? 'moon' : 'sun');
   };
+  dark.addEventListener('change', paint);
   button.addEventListener('click', () => {
     theme = theme === 'system' ? 'light' : theme === 'light' ? 'dark' : 'system';
     if (theme === 'system') delete document.documentElement.dataset.theme;
@@ -240,8 +247,10 @@ function copyButtons(): void {
     button.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(button.dataset.copy ?? '');
-        button.textContent = t('copied');
-        setTimeout(() => (button.textContent = t('copy')), 1400);
+        const label = button.querySelector<HTMLElement>('[data-i18n]');
+        if (!label) return;
+        label.textContent = t('copied');
+        setTimeout(() => (label.textContent = t('copy')), 1400);
       } catch {
         // Sem permissão de área de transferência: o comando continua visível para copiar à mão.
       }
@@ -250,6 +259,7 @@ function copyButtons(): void {
 }
 
 grain();
+paintIcons();
 tear();
 languageTags();
 themeButton();
