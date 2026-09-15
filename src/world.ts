@@ -91,6 +91,10 @@ const SOLID_TAGS = new Set([
   'HR', 'PROGRESS', 'METER', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'svg',
 ]);
 
+/** Camadas dos gatos e trechos marcados para ignorar: nunca viram plataforma. */
+export const LAYER_ATTR = 'data-kitten-layer';
+const IGNORED = `[${LAYER_ATTR}], [data-kitten-ignore]`;
+
 const MAX_ELEMENTS = 600;
 const MIN_WIDTH = 18;
 /** Abaixo disso não é parede, é degrau: o gato pula e pronto. */
@@ -99,7 +103,8 @@ const RESCAN_INTERVAL = 1500;
 const MIN_INTERVAL = 80;
 
 function isTransparent(color: string): boolean {
-  return color === 'transparent' || color === 'rgba(0, 0, 0, 0)' || /,\s*0\)$/.test(color);
+  // Só alfa zero: `rgb(255, 0, 0)` também termina em ", 0)" e é vermelho, não transparente.
+  return color === 'transparent' || /^rgba\(.*,\s*0\)$|\/\s*0\)$/.test(color);
 }
 
 function isVisible(el: Element): boolean {
@@ -148,7 +153,8 @@ export class World {
   private dirty = true;
   /** -Infinity garante que a primeira leitura sempre acontece, mesmo logo após a navegação. */
   private lastScan = Number.NEGATIVE_INFINITY;
-  private readonly layers = new Set<Element>();
+  /** Rolagem que mexe nas superfícies: a da página inteira ou só a do container (e de dentro dele). */
+  private readonly scrollTarget: EventTarget;
   private readonly resizeObserver: ResizeObserver;
   private readonly mutationObserver: MutationObserver;
   private readonly observed = new Set<Element>();
@@ -163,9 +169,7 @@ export class World {
     this.resizeObserver.observe(container);
     this.mutationObserver = new MutationObserver((records) => {
       // Ignora mudanças nas camadas dos gatos e em trechos marcados com data-kitten-ignore.
-      const relevant = (node: Node): boolean =>
-        !this.isLayer(node) && !(node instanceof Element && node.closest('[data-kitten-ignore]'));
-      if (records.some((r) => relevant(r.target))) this.dirty = true;
+      if (records.some((r) => !(r.target instanceof Element && r.target.closest(IGNORED)))) this.dirty = true;
     });
     this.mutationObserver.observe(container, {
       subtree: true,
@@ -174,17 +178,10 @@ export class World {
       attributeFilter: ['class', 'style', 'hidden', 'open', 'data-kitten-platform', 'data-kitten-ignore'],
     });
     window.addEventListener('resize', this.markDirty, { passive: true });
-    window.addEventListener('scroll', this.markDirty, { passive: true, capture: true });
-  }
-
-  /** Camadas dos gatos (são ignoradas como plataforma). */
-  addLayer(layer: Element): void {
-    this.layers.add(layer);
-    this.dirty = true;
-  }
-
-  removeLayer(layer: Element): void {
-    this.layers.delete(layer);
+    // Num container, rolar a página não muda nada em coordenadas do palco (a origem é lida na
+    // hora): só a rolagem dele ou de algo dentro dele. `scroll` não borbulha, daí o capture.
+    this.scrollTarget = this.page ? window : container;
+    this.scrollTarget.addEventListener('scroll', this.markDirty, { passive: true, capture: true });
   }
 
   release(): void {
@@ -192,7 +189,7 @@ export class World {
     this.resizeObserver.disconnect();
     this.mutationObserver.disconnect();
     window.removeEventListener('resize', this.markDirty);
-    window.removeEventListener('scroll', this.markDirty, { capture: true });
+    this.scrollTarget.removeEventListener('scroll', this.markDirty, { capture: true });
     World.registry.get(this.container)?.delete(this.selector);
   }
 
@@ -218,11 +215,6 @@ export class World {
     return true;
   }
 
-  private isLayer(node: Node): boolean {
-    for (const layer of this.layers) if (layer === node || layer.contains(node)) return true;
-    return false;
-  }
-
   /** Origem do palco (canto do padding box do container) em coordenadas de viewport. */
   private origin(): { x: number; y: number } {
     if (this.page) return { x: 0, y: 0 };
@@ -241,11 +233,13 @@ export class World {
     const list = auto ? c.querySelectorAll('*') : c.querySelectorAll(this.selector);
     const found: Box[] = [];
     const set = new Set<Element>();
-    const count = Math.min(list.length, MAX_ELEMENTS);
 
-    for (let i = 0; i < count; i++) {
-      const el = list[i]!;
-      if (this.layers.has(el) || el.closest('[data-kitten-ignore]') || this.isLayer(el)) continue;
+    // O limite conta caixas aceitas, não elementos lidos: numa página longa, o que está na tela
+    // pode vir depois dos primeiros 600 do documento.
+    // ponytail: um getBoundingClientRect por elemento a cada leitura; se DOMs de dezenas de
+    // milhares de nós pesarem, podar subárvores fora do palco com um TreeWalker.
+    for (const el of list) {
+      if (found.length >= MAX_ELEMENTS) break;
       if (el instanceof SVGElement && el.tagName !== 'svg') continue;
       const r = el.getBoundingClientRect();
       if (r.width < MIN_WIDTH || r.height < 4) continue;
@@ -256,6 +250,7 @@ export class World {
       if (right < 0 || left > this.width || bottom < 0 || top > this.height) continue;
       // Ignora "fundos": caixas que ocupam quase o palco inteiro.
       if (r.width > this.width * 0.97 && r.height > this.height * 0.85) continue;
+      if (el.closest(IGNORED)) continue;
       if (auto && !looksSolid(el)) continue;
       if (!isVisible(el)) continue;
       const toy = el.hasAttribute('data-kitten-toy') || (r.width <= 180 && r.height <= 120);
@@ -318,16 +313,6 @@ export class World {
     this.surfaces = surfaces;
     this.walls = walls;
     this.version++;
-  }
-
-  /** Superfície que sustenta um ponto (x, y) com tolerância vertical. */
-  supportAt(x: number, y: number, tolerance = 3): Surface | null {
-    let best: Surface | null = null;
-    for (const s of this.surfaces) {
-      if (x < s.left || x > s.right || Math.abs(s.y - y) > tolerance) continue;
-      if (!best || s.y < best.y) best = s;
-    }
-    return best;
   }
 
   /** Primeira superfície abaixo de `fromY` na coluna `x` (onde um gato caindo pousa). */

@@ -243,19 +243,7 @@ export class Brain {
 
   private begin(name: BehaviorName): void {
     this.last = name;
-    const routines: Record<BehaviorName, () => Routine> = {
-      idle: () => this.idle(),
-      loaf: () => this.loaf(),
-      wander: () => this.wander(),
-      explore: () => this.explore(false),
-      climb: () => this.parkour(),
-      groom: () => this.groom(),
-      nap: () => this.nap(),
-      play: () => this.play(),
-      stretch: () => this.stretch(),
-      social: () => this.social(),
-    };
-    this.run(routines[name](), name);
+    this.act(name);
   }
 
   private run(routine: Routine, state: string): void {
@@ -422,11 +410,6 @@ export class Brain {
     return options;
   }
 
-  /**
-   * Chega na quina, se agarra, sobe trocando as patas, engancha na borda, se puxa
-   * para cima — e, já que está lá em cima, muitas vezes emenda um pulo para outra
-   * plataforma. É o parkour dele.
-   */
   /**
    * Chega na quina, se agarra e sobe. A escalada é um atalho para o pulo: na maioria das
    * vezes ele solta a parede no meio do caminho e salta para uma plataforma que só de lá

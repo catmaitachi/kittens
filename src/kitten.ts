@@ -16,7 +16,7 @@ import { subscribe, type Tickable } from './scheduler';
 import { cellOf, coatAtlas, fxAtlas, FX_CELL, type Atlas, type Coat, type FrameName, type FxName } from './sprites/atlas';
 import { CELL_H, CELL_W } from './sprites/rasterize';
 import { adoptStyles } from './styles';
-import { joinContainer, petsIn, World, type Pet, type Surface, type Wall } from './world';
+import { joinContainer, LAYER_ATTR, petsIn, World, type Pet, type Surface, type Wall } from './world';
 
 export interface KittenOptions {
   /** Pelagem: `'calico'` (a original), `'orange'`, `'black'`, `'gray'`, `'siamese'` ou uma paleta própria. */
@@ -174,11 +174,12 @@ export class Kitten extends EventTarget implements CatBody, Tickable, Pet {
     }
     this.element = layer;
     layer.setAttribute('aria-hidden', 'true');
+    layer.setAttribute(LAYER_ATTR, '');
 
     this.world = World.acquire(container, options.platforms?.trim() || 'auto');
     // Entra na turma do container: é assim que um gato enxerga o outro.
     this.leaveGroup = joinContainer(container, this);
-    this.world.addLayer(layer);
+    this.world.invalidate();
     if (this.world.page) layer.style.position = 'fixed';
     else this.ensurePositioned();
 
@@ -324,10 +325,10 @@ export class Kitten extends EventTarget implements CatBody, Tickable, Pet {
     for (const fn of this.cleanups.splice(0)) fn();
     this.leaveGroup?.();
     this.leaveGroup = null;
-    this.world.removeLayer(this.element);
     this.world.release();
     this.root.replaceChildren();
     if (this.createdLayer) this.element.remove();
+    else this.element.removeAttribute(LAYER_ATTR);
     this.releasePosition();
     this.emit('destroy');
   }
