@@ -12,7 +12,7 @@
 <img src="https://img.shields.io/badge/TypeScript-types_included-e07b39?style=flat-square&labelColor=2b2321" alt="TypeScript types included">
 <img src="https://img.shields.io/badge/license-MIT-e07b39?style=flat-square&labelColor=2b2321" alt="MIT license">
 
-**[See the cats live](https://catmaitachi.github.io/kittens/)** · [Português](README.pt-BR.md) · [npm](https://www.npmjs.com/package/kittens) · [Report an issue](https://github.com/catmaitachi/kittens/issues)
+**[See the cats live](https://catmaitachi.github.io/kittens/)** · [Português](README.pt-BR.md) · [npm](https://www.npmjs.com/package/@catmaitachi/kittens) · [Report an issue](https://github.com/catmaitachi/kittens/issues)
 
 </div>
 
@@ -28,7 +28,7 @@ The [landing page](https://catmaitachi.github.io/kittens/) shows it all running.
 ## Install
 
 ```bash
-npm i kittens
+npm i @catmaitachi/kittens
 ```
 
 With the tag, the cat lives in the parent element:
@@ -40,14 +40,14 @@ With the tag, the cat lives in the parent element:
 </section>
 
 <script type="module">
-  import 'kittens'; // registers <kitten-pet>
+  import '@catmaitachi/kittens'; // registers <kitten-pet>
 </script>
 ```
 
 Or with the class, pointing at the container:
 
 ```ts
-import { Kitten } from 'kittens';
+import { Kitten } from '@catmaitachi/kittens';
 
 const cat = new Kitten(document.querySelector('#area')!, { coat: 'orange', summon: true });
 cat.addEventListener('statechange', (e) => console.log(e.detail.state));

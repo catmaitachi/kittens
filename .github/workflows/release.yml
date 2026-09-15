@@ -1,0 +1,39 @@
+name: Release
+
+# Publica no npm quando uma tag de versão (v0.1.1, v1.0.0...) chega ao GitHub.
+# Usa trusted publishing: o npm confia neste workflow pelo OIDC, sem token guardado.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: npm
+      - run: npm ci
+
+      - name: Confere se a tag bate com a versão do package.json
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "A tag $GITHUB_REF_NAME não bate com a versão $version do package.json." >&2
+            exit 1
+          fi
+
+      # prepublishOnly roda typecheck e build antes de empacotar.
+      - run: npm publish --provenance --access public
+
+      - name: Cria a release no GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --generate-notes --verify-tag

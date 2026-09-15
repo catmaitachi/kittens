@@ -201,7 +201,7 @@ function parkour(): void {
   cat(stage, { coat: 'gray', behaviors, x: at(stage, 0.5) });
   const text = (l: Lang): string =>
     [
-      `import { Kitten } from 'kittens';`,
+      `import { Kitten } from '@catmaitachi/kittens';`,
       '',
       l === 'pt' ? '// mais escalada e exploração, nada de soneca' : '// more climbing and exploring, no naps',
       `new Kitten(stage, {`,

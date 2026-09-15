@@ -1,5 +1,5 @@
 {
-  "name": "kittens",
+  "name": "@catmaitachi/kittens",
   "version": "0.1.0",
   "description": "Pixel-art kittens that live inside any element of your page: they walk, run, jump onto elements, climb walls, play, groom and sleep.",
   "keywords": [
@@ -37,17 +37,20 @@
     "assets"
   ],
   "sideEffects": [
-    "./src/element.ts",
     "./dist/kittens.js",
     "./dist/kittens.umd.cjs"
   ],
   "scripts": {
     "dev": "vite",
     "build": "vite build && tsc -p tsconfig.build.json",
+    "prepublishOnly": "npm run typecheck && npm run build",
     "build:site": "vite build --mode site",
     "preview:site": "vite preview --mode site",
     "typecheck": "tsc -p tsconfig.json && tsc -p scripts/tsconfig.json",
     "sprites": "node --experimental-strip-types --no-warnings=ExperimentalWarning scripts/export-sprites.ts"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "devDependencies": {
     "@types/node": "^22.20.2",

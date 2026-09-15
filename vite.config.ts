@@ -22,7 +22,8 @@ export default defineConfig(({ command, mode }) => {
   return {
     build: {
       target: 'es2022',
-      sourcemap: true,
+      // Sem sourcemaps no pacote: apontariam para src/, que não é publicado.
+      sourcemap: false,
       lib: {
         entry: page('./src/index.ts'),
         name: 'Kittens',
