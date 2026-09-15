@@ -258,7 +258,9 @@ function copyButtons(): void {
   }
 }
 
-grain();
+// `?capture` gera a página sem textura de papel: é assim que os GIFs do README são gravados,
+// e o ruído aleatório em cada quadro deixaria os GIFs enormes.
+if (!new URLSearchParams(location.search).has('capture')) grain();
 paintIcons();
 tear();
 languageTags();
