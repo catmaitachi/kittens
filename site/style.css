@@ -461,10 +461,10 @@ button { font: inherit; color: inherit; }
   .house .furniture { --art: 1.6px; }
   .footer-grid { grid-template-columns: 1fr; }
   .note { font-size: 11px; padding-inline: 4px; }
-  .sketch .note:nth-of-type(1) { --x: 6% !important; --y: 6% !important; --w: 34% !important; --h: 76px !important; }
-  .sketch .note:nth-of-type(2) { --x: 12% !important; --y: 42% !important; --w: 32% !important; --h: 72px !important; }
-  .sketch .note:nth-of-type(3) { --x: 58% !important; --y: 8% !important; --w: 36% !important; --h: 76px !important; }
-  .sketch .note.hint-note { --x: 54% !important; --y: 44% !important; --w: 40% !important; --h: 84px !important; flex-direction: column; }
+  .sketch .note:nth-of-type(1) { --x: 6% !important; --y: 20% !important; --w: 34% !important; --h: 76px !important; }
+  .sketch .note:nth-of-type(2) { --x: 12% !important; --y: 54% !important; --w: 32% !important; --h: 72px !important; }
+  .sketch .note:nth-of-type(3) { --x: 58% !important; --y: 22% !important; --w: 36% !important; --h: 76px !important; }
+  .sketch .note.hint-note { --x: 54% !important; --y: 55% !important; --w: 40% !important; --h: 84px !important; flex-direction: column; }
   .sketch .note.hint-note .doodle { width: 26px; }
   .sticker { left: 6% !important; top: 6% !important; }
   .demo-head { margin-bottom: 20px; }
