@@ -456,17 +456,22 @@ button { font: inherit; color: inherit; }
   .install code { white-space: nowrap; }
   .copy { padding: 8px 10px; }
   .copy [data-i18n] { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-  .house { height: 380px; }
+  .house { height: 300px; --floor: 22px; }
+  /* Móveis um pouco menores que a escala dos gatos: numa tela estreita a sala não comporta o sofá em 1:1. */
+  .house .furniture { --art: 1.6px; }
   .footer-grid { grid-template-columns: 1fr; }
   .note { font-size: 11px; padding-inline: 4px; }
-  .sketch .note:nth-of-type(1) { --x: 4% !important; --y: 6% !important; --w: 42% !important; --h: 112px !important; }
-  .sketch .note:nth-of-type(2) { --x: 6% !important; --y: 42% !important; --w: 40% !important; --h: 104px !important; }
-  .sketch .note:nth-of-type(3) { --x: 54% !important; --y: 6% !important; --w: 42% !important; --h: 112px !important; }
-  .sketch .note.hint-note { --x: 52% !important; --y: 42% !important; --w: 44% !important; --h: 120px !important; flex-direction: column; font-size: 11px; }
+  .sketch .note:nth-of-type(1) { --x: 6% !important; --y: 6% !important; --w: 34% !important; --h: 76px !important; }
+  .sketch .note:nth-of-type(2) { --x: 12% !important; --y: 42% !important; --w: 32% !important; --h: 72px !important; }
+  .sketch .note:nth-of-type(3) { --x: 58% !important; --y: 8% !important; --w: 36% !important; --h: 76px !important; }
+  .sketch .note.hint-note { --x: 54% !important; --y: 44% !important; --w: 40% !important; --h: 84px !important; flex-direction: column; }
+  .sketch .note.hint-note .doodle { width: 26px; }
   .sticker { left: 6% !important; top: 6% !important; }
   .demo-head { margin-bottom: 20px; }
   .code { font-size: 12.5px; padding: 14px 16px; }
-  .sketch { height: 400px; }
+  .sketch { height: 340px; }
+  .sketch .note { gap: 4px; padding: 6px; font-size: 11px; }
+  .sketch .note .doodle { width: 34px; }
   .box { height: 420px; }
   .sticker { width: 56px; height: 56px; font-size: 20px; }
   .stamp { font-size: 24px; }
