@@ -361,14 +361,29 @@ button { font: inherit; color: inherit; }
 .export-row .agent { margin: 0; padding: 12px 22px; font-size: 16px; }
 .export-row .agent .icon { --icon: 18px; }
 
+/* Celular: tudo em linhas. O gato em cima, as poses numa fileira embaixo dele e as pelagens
+   (ou, editando, as ferramentas) como chips lado a lado. */
 @media (max-width: 760px) {
-  .spotlight { grid-template-columns: 1fr 1fr; grid-template-areas: "center center" "left right"; min-height: 0; }
-  .spot-center { grid-area: center; padding-top: 24px; }
-  .spot-left { grid-area: left; align-self: start; }
-  .spot-right { grid-area: right; align-self: start; }
+  .spotlight {
+    grid-template-columns: 1fr; grid-template-areas: "center" "right" "left";
+    gap: 20px; min-height: 0; padding: 20px 14px 24px;
+  }
+  .spot-center { grid-area: center; padding-top: 20px; }
+  .spot-right { grid-area: right; align-items: center; }
+  .spot-left { grid-area: left; align-items: center; }
   .beam { width: 110%; }
-  .canvas-wrap { width: min(100%, 300px); }
+  .canvas-wrap { width: min(100%, 280px); }
+  .pose-caption { margin-top: 12px; }
+  .pose-list { flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 4px 8px; zoom: .7; }
+  .coat-list { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 8px; }
+  .coat { gap: 8px; padding: 6px 10px; font-size: 13px; border-radius: 999px; background: rgba(var(--light), .06); }
+  .coat .chip { width: 20px; height: 20px; }
+  .paint-tools { flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; gap: 14px 18px; }
+  .history { grid-template-columns: repeat(8, 30px); gap: 6px; justify-content: center; }
+  .history .dot { width: 26px; height: 26px; }
+  .export-row { flex-direction: column; align-items: flex-start; gap: 14px; margin-top: 24px; }
 }
+
 
 .sticker {
   position: absolute; display: grid; place-items: center; width: 76px; height: 76px; border-radius: 50%; pointer-events: none;
@@ -444,7 +459,13 @@ button { font: inherit; color: inherit; }
   .house { height: 380px; }
   .footer-grid { grid-template-columns: 1fr; }
   .note { font-size: 11px; padding-inline: 4px; }
-  .hint-note { --x: 56% !important; --w: 38% !important; --h: 84px !important; font-size: 11px; }
+  .sketch .note:nth-of-type(1) { --x: 4% !important; --y: 6% !important; --w: 42% !important; --h: 112px !important; }
+  .sketch .note:nth-of-type(2) { --x: 6% !important; --y: 42% !important; --w: 40% !important; --h: 104px !important; }
+  .sketch .note:nth-of-type(3) { --x: 54% !important; --y: 6% !important; --w: 42% !important; --h: 112px !important; }
+  .sketch .note.hint-note { --x: 52% !important; --y: 42% !important; --w: 44% !important; --h: 120px !important; flex-direction: column; font-size: 11px; }
+  .sticker { left: 6% !important; top: 6% !important; }
+  .demo-head { margin-bottom: 20px; }
+  .code { font-size: 12.5px; padding: 14px 16px; }
   .sketch { height: 400px; }
   .box { height: 420px; }
   .sticker { width: 56px; height: 56px; font-size: 20px; }
