@@ -69,6 +69,7 @@ export const CSS: string = /* css */ `
 .p.zzz   { animation: g-zzz 2.6s linear forwards; }
 .p.dust  { animation: g-dust .5s ease-out forwards; }
 .p.alert { animation: g-alert .8s ease-out forwards; }
+.p.angry { animation: g-angry .9s ease-out forwards; }
 
 @keyframes g-heart {
   0%   { opacity: 0; transform: translate(var(--x), var(--y)) scale(.5); }
@@ -91,6 +92,37 @@ export const CSS: string = /* css */ `
   35%  { transform: translate(var(--x), var(--y)); }
   80%  { opacity: 1; }
   100% { opacity: 0; transform: translate(var(--x), var(--y)); }
+}
+@keyframes g-angry {
+  0%   { opacity: 0; transform: translate(var(--x), var(--y)) scale(.4); }
+  20%  { opacity: 1; transform: translate(var(--x), calc(var(--y) - var(--u) * 2)) scale(1.25); }
+  35%  { transform: translate(calc(var(--x) - var(--u) * .5), calc(var(--y) - var(--u) * 2)) scale(1); }
+  50%  { transform: translate(calc(var(--x) + var(--u) * .5), calc(var(--y) - var(--u) * 2)) scale(1); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--x), calc(var(--y) - var(--u) * 4)) scale(1); }
+}
+
+.patience {
+  position: absolute;
+  bottom: calc(100% + var(--u));
+  left: 50%;
+  width: calc(var(--u) * 16);
+  height: calc(var(--u) * 3);
+  translate: -50% 0;
+  background: #2b2321;
+  box-shadow:
+    0 calc(var(--u) * -1) 0 0 #111114,
+    0 var(--u) 0 0 #111114,
+    calc(var(--u) * -1) 0 0 0 #111114,
+    var(--u) 0 0 0 #111114;
+  pointer-events: none;
+}
+.patience[hidden] { display: none; }
+.patience i {
+  display: block;
+  height: 100%;
+  width: calc(var(--p, 0) * 1%);
+  background: hsl(calc(var(--p, 0) * 1.1) 72% 52%);
 }
 
 .bubble {

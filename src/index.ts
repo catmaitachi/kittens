@@ -7,8 +7,9 @@ export { CLIPS } from './animations';
 export type { ClipName } from './animations';
 export { FRAMES, FX_FRAMES } from './sprites/frames';
 export type { FrameDef } from './sprites/frames';
-export { PALETTES } from './sprites/palette';
-export type { Palette, PaletteKey, PaletteName } from './sprites/palette';
+export { COATS, registerCoat, resolveCoat } from './sprites/coats';
+export type { KittenCoat, CoatName } from './sprites/coats';
+export { SKIN_W, SKIN_H, skinCellAt, eyeAt, renderFrame, coatToCode } from './sprites/skin';
 export type { Coat, FrameName } from './sprites/atlas';
 
 import { defineKitten } from './element';

@@ -1,6 +1,6 @@
 {
   "name": "@catmaitachi/kittens",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Pixel-art kittens that live inside any element of your page: they walk, run, jump onto elements, climb walls, play, groom and sleep.",
   "keywords": [
     "pet",
@@ -47,6 +47,7 @@
     "build:site": "vite build --mode site",
     "preview:site": "vite preview --mode site",
     "typecheck": "tsc -p tsconfig.json && tsc -p scripts/tsconfig.json",
+    "check": "node --experimental-strip-types --no-warnings=ExperimentalWarning scripts/check-skin.ts",
     "sprites": "node --experimental-strip-types --no-warnings=ExperimentalWarning scripts/export-sprites.ts"
   },
   "publishConfig": {

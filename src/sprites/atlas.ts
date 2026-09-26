@@ -2,14 +2,15 @@
  * Gera a spritesheet em tempo de execução (canvas → data URL) a partir da pixel art.
  * Uma imagem por pelagem, criada na primeira vez e reaproveitada por todos os gatos.
  */
-import { FRAMES, FX_FRAMES } from './frames';
-import { PALETTES, PATTERNS, type Palette, type PaletteName, type PatternFn } from './palette';
-import { rasterizeSheet, type SheetLayout, type SheetPixels } from './rasterize';
+import { FRAMES, FX_FRAMES } from './frames.ts';
+import { resolveCoat, type KittenCoat } from './coats.ts';
+import { rasterizeSheet, type SheetLayout, type SheetPixels } from './rasterize.ts';
+import { paintPixel } from './skin.ts';
 
 export type FrameName = keyof typeof FRAMES;
 export type FxName = keyof typeof FX_FRAMES;
-/** Nome de uma pelagem pronta ou uma paleta própria. */
-export type Coat = PaletteName | Palette;
+/** Nome de uma pelagem (pronta ou registrada) ou a própria pelagem. */
+export type Coat = string | KittenCoat;
 
 export interface Atlas extends SheetLayout {
   /** Imagem pronta para `background-image`. */
@@ -19,7 +20,19 @@ export interface Atlas extends SheetLayout {
 /** Tamanho das células de efeitos. */
 export const FX_CELL = 8;
 
+/** Cores fixas dos efeitos (as do calico, mais o vermelho do símbolo de raiva). */
+export const FX_PALETTE: Readonly<Record<string, string>> = {
+  k: '#111114', s: '#6f7173', w: '#e1e6e6', g: '#c4c7c8', d: '#1e2a32', o: '#d69058', a: '#dca157', p: '#e59aa8', r: '#d8433a',
+};
+
+/** Pelagem editada gera uma chave nova a cada pincelada: sem limite o cache cresceria para sempre. */
+const CACHE_LIMIT = 32;
 const cache = new Map<string, Atlas>();
+
+function cacheSet(key: string, atlas: Atlas): void {
+  cache.set(key, atlas);
+  if (cache.size > CACHE_LIMIT) cache.delete(cache.keys().next().value!);
+}
 
 function toAtlas(sheet: SheetPixels): Atlas {
   const canvas = document.createElement('canvas');
@@ -40,34 +53,34 @@ function toAtlas(sheet: SheetPixels): Atlas {
   };
 }
 
-export function resolvePalette(coat: Coat | undefined): Palette {
-  if (!coat) return PALETTES.calico;
-  if (typeof coat === 'string') return PALETTES[coat] ?? PALETTES.calico;
-  return { ...PALETTES.calico, ...coat };
+/** Pixels da spritesheet de uma pelagem (sem DOM). */
+export function coatSheet(coat: KittenCoat): SheetPixels {
+  return rasterizeSheet(FRAMES, (_, frame, x, y) => paintPixel(coat, frame as FrameName, x, y));
 }
 
-/** Regra de pintura da raça (listras, máscara, degradê). */
-function resolvePattern(coat: Coat | undefined): PatternFn | null {
-  return typeof coat === 'string' ? PATTERNS[coat] ?? null : null;
+/** Pixels da spritesheet dos efeitos (sem DOM). */
+export function fxSheet(): SheetPixels {
+  return rasterizeSheet(FX_FRAMES, (symbol) => FX_PALETTE[symbol] ?? null, 8, FX_CELL, FX_CELL);
 }
 
-/** Spritesheet do gato para uma pelagem. */
+/** Spritesheet do gato para uma pelagem (cache pelo conteúdo: pelagem editada gera outra imagem). */
 export function coatAtlas(coat: Coat = 'calico'): Atlas {
-  const key = typeof coat === 'string' ? coat : JSON.stringify(resolvePalette(coat));
+  const resolved = resolveCoat(coat);
+  const key = JSON.stringify(resolved);
   let atlas = cache.get(key);
   if (!atlas) {
-    atlas = toAtlas(rasterizeSheet(FRAMES, resolvePalette(coat), 8, undefined, undefined, resolvePattern(coat)));
-    cache.set(key, atlas);
+    atlas = toAtlas(coatSheet(resolved));
+    cacheSet(key, atlas);
   }
   return atlas;
 }
 
-/** Spritesheet dos efeitos (coração, zzz, poeira, susto). */
+/** Spritesheet dos efeitos (coração, zzz, poeira, susto, raiva). */
 export function fxAtlas(): Atlas {
   let atlas = cache.get('\0fx');
   if (!atlas) {
-    atlas = toAtlas(rasterizeSheet(FX_FRAMES, PALETTES.calico, 8, FX_CELL, FX_CELL));
-    cache.set('\0fx', atlas);
+    atlas = toAtlas(fxSheet());
+    cacheSet('\0fx', atlas);
   }
   return atlas;
 }

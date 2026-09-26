@@ -48,8 +48,12 @@ jobs:
       - name: Cria a release no GitHub
         env:
           GH_TOKEN: ${{ github.token }}
-        # Numa reexecução a release já existe; aí segue direto para a publicação.
-        run: gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --generate-notes --verify-tag
+        # Numa reexecução a release já existe; aí segue direto para a publicação. As notas são a
+        # seção desta versão no CHANGELOG (do "## [x.y.z]" até o próximo "## [").
+        run: |
+          gh release view "$TAG" >/dev/null 2>&1 && exit 0
+          awk -v v="## [$VERSION]" 'index($0, v) == 1 { on = 1; next } /^## \[/ { on = 0 } on' CHANGELOG.md > notes.md
+          gh release create "$TAG" --title "$TAG" --notes-file notes.md --verify-tag
 
       # prepublishOnly roda typecheck e build antes de empacotar.
       - name: Publica no npm

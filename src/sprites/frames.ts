@@ -2,7 +2,7 @@
  * Pixel art do gato. Cada frame é uma grade ASCII desenhada virada para a DIREITA
  * (o componente espelha o sprite quando o gato anda para a esquerda).
  *
- * Legenda (os índices da paleta ficam em palette.ts):
+ * Legenda (as cores de cada símbolo ficam em coats.ts):
  *   .  transparente     k  contorno          s  contorno suave (dobras, pescoço)
  *   w  pelo             g  sombra do pelo
  *   a  olho             p  rosa (nariz, língua, almofadinhas)
@@ -564,5 +564,15 @@ export const FX_FRAMES = {
     'kkk',
     'kwk',
     'kkk',
+  ]},
+  /** Bravo: marca de raiva em pixel sobre a cabeça. */
+  angry: { ax: 3, rows: [
+    'k.....k',
+    '.r...r.',
+    '..rkr..',
+    '.rkkkr.',
+    '..rkr..',
+    '.r...r.',
+    'k.....k',
   ]},
 } satisfies Record<string, FrameDef>;

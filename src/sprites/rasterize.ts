@@ -4,7 +4,6 @@
  * e no Node para exportar o PNG. Só importa tipos, que o Node descarta.
  */
 import type { FrameDef } from './frames';
-import type { Palette, PaletteKey, PatternFn } from './palette';
 
 /** Tamanho de cada célula da spritesheet do gato, em pixels da arte. */
 export const CELL_W = 32;
@@ -34,63 +33,30 @@ export function layoutSheet(names: readonly string[], cols = 8, cellW = CELL_W, 
   return { index, cols, rows, cellW, cellH, width: cols * cellW, height: rows * cellH };
 }
 
-function parseHex(color: string): [number, number, number] {
-  const n = Number.parseInt(color.slice(1), 16);
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-}
+/** Cor de um pixel do frame (símbolo na grade, nome do frame, x, y); `null` é transparente. */
+export type Painter = (symbol: string, frame: string, x: number, y: number) => string | null;
 
-/** Caixa do bicho e posição do nariz dentro de um frame (as regras de pelagem usam). */
-function measure(frame: FrameDef): {
-  box: { left: number; right: number; top: number; bottom: number };
-  nose: { x: number; y: number } | null;
-  /** Primeira linha desenhada de cada coluna: a silhueta de cima (lombo, cabeça, rabo). */
-  tops: number[];
-} {
-  let left = Number.POSITIVE_INFINITY;
-  let right = 0;
-  let top = Number.POSITIVE_INFINITY;
-  let bottom = 0;
-  let nose: { x: number; y: number } | null = null;
-  const tops: number[] = [];
-  frame.rows.forEach((row, y) => {
-    for (let x = 0; x < row.length; x++) {
-      const ch = row[x]!;
-      if (ch === '.') continue;
-      if (x < left) left = x;
-      if (x > right) right = x;
-      if (y < top) top = y;
-      if (y > bottom) bottom = y;
-      if (tops[x] === undefined) tops[x] = y;
-      if (ch === 'p' && !nose) nose = { x, y }; // o primeiro rosa de cima para baixo é o nariz
-    }
-  });
-  return { box: { left, right, top, bottom }, nose, tops };
+/** `'#rrggbb'` → `[r, g, b]` (0–255 cada). */
+export function hexToRgb(color: string): [number, number, number] {
+  const n = Number.parseInt(color.slice(1), 16);
+  return [n >> 16, (n >> 8) & 255, n & 255];
 }
 
 /**
  * Pinta todos os frames numa grade de células. Cada frame é alinhado pela âncora:
  * a coluna `ax` cai no meio da célula e a última linha encosta no fundo dela.
- * `pattern` é a regra de pelagem da raça (listras, máscara, degradê); sem ela,
- * cada símbolo recebe direto a cor da paleta.
+ * `paint` diz a cor de cada pixel (a pelagem, ou a paleta fixa dos efeitos).
  */
 export function rasterizeSheet(
   frames: Readonly<Record<string, FrameDef>>,
-  palette: Palette,
+  paint: Painter,
   cols = 8,
   cellW = CELL_W,
   cellH = CELL_H,
-  pattern?: PatternFn | null,
 ): SheetPixels {
   const names = Object.keys(frames);
   const layout = layoutSheet(names, cols, cellW, cellH);
   const data = new Uint8ClampedArray(layout.width * layout.height * 4);
-  const cache = new Map<string, [number, number, number]>();
-  const rgb = (color: string): [number, number, number] => {
-    let parsed = cache.get(color);
-    if (!parsed) cache.set(color, (parsed = parseHex(color)));
-    return parsed;
-  };
-  const known = new Set<string>(Object.keys(palette));
 
   names.forEach((name, i) => {
     const frame = frames[name]!;
@@ -98,26 +64,15 @@ export function rasterizeSheet(
     const cellY = Math.floor(i / cols) * cellH;
     const originX = cellX + cellW / 2 - frame.ax;
     const originY = cellY + cellH - frame.rows.length;
-    const { box, nose, tops } = measure(frame);
-    const at = (px: number, py: number): string => frame.rows[py]?.[px] ?? '.';
 
     frame.rows.forEach((row, y) => {
       for (let x = 0; x < row.length; x++) {
-        const symbol = row[x]!;
-        if (!known.has(symbol)) continue; // '.' e símbolos sem cor ficam transparentes
-        const key = symbol as PaletteKey;
-        const custom = pattern
-          ? pattern({ symbol: key, frame: name, x, y, box, nose, palette, columnTop: tops[x] ?? y, at })
-          : null;
-        const color = rgb(custom ?? palette[key]);
+        const color = row[x] === '.' ? null : paint(row[x]!, name, x, y);
         const px = originX + x;
         const py = originY + y;
-        if (px < cellX || px >= cellX + cellW || py < cellY) continue;
-        const o = (py * layout.width + px) * 4;
-        data[o] = color[0];
-        data[o + 1] = color[1];
-        data[o + 2] = color[2];
-        data[o + 3] = 255;
+        if (!color || px < cellX || px >= cellX + cellW || py < cellY) continue;
+        const [r, g, b] = hexToRgb(color);
+        data.set([r, g, b, 255], (py * layout.width + px) * 4);
       }
     });
   });
@@ -128,11 +83,11 @@ export function rasterizeSheet(
 /** Valida as grades (linhas do mesmo tamanho, cabem na célula, símbolos conhecidos). */
 export function validateFrames(
   frames: Readonly<Record<string, FrameDef>>,
-  palette: Palette,
+  symbols: Iterable<string>,
   cellW = CELL_W,
   cellH = CELL_H,
 ): string[] {
-  const known = new Set<string>(['.', ...Object.keys(palette)]);
+  const known = new Set<string>(['.', ...symbols]);
   const problems: string[] = [];
   for (const [name, frame] of Object.entries(frames)) {
     const width = frame.rows[0]?.length ?? 0;

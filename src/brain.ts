@@ -41,11 +41,15 @@ export interface CatBody {
   readonly reducedMotion: boolean;
   /** Último ponto do mouse dentro do palco (px do palco + instante). */
   readonly pointer: { readonly x: number; readonly y: number; readonly t: number } | null;
+  /** Velocidade do arrasto (segurando no colo), em px da arte/s; `null` se não estiver sendo segurado. */
+  readonly dragVelocity: { readonly x: number; readonly y: number } | null;
   anim(clip: ClipName, restart?: boolean): void;
   animDone(): boolean;
   face(dir: 1 | -1): void;
   walkTo(x: number, run?: boolean): void;
   stop(): void;
+  /** Se solta da mão de quem segura (o gato bravo escapa do colo) e cai. */
+  escape(): void;
   jumpTo(target: Surface, x: number): void;
   hop(dx: number, height: number): void;
   /** Abraça uma quina na altura em que está. */
@@ -93,6 +97,23 @@ export const DEFAULT_WEIGHTS: Readonly<Record<BehaviorName, number>> = {
 /** Tempo máximo esperando uma condição (andar, pousar...) antes de desistir. */
 const WAIT_TIMEOUT = 14;
 
+/** A paciência é uma barra de 0 a 100. Só chacoalhar gasta; segurar parado não. */
+const PATIENCE_MAX = 100;
+/** Quanto cada chacoalhão tira: três seguidos deixam o gato bravo. */
+const SHAKE_COST = 35;
+/** Depois de um chacoalhão contado, o próximo só conta passado este tempo (s): o que pesa é a
+ * insistência de quem chacoalha, não quão rápido a mão vai e volta. */
+const SHAKE_COOLDOWN = 1;
+/** Paciência que volta por segundo fora do colo (de 0 a cheia em ~12 s). O bravo só passa
+ * com a barra cheia de novo. */
+const PATIENCE_RECOVER = 8;
+/** Velocidade de arrasto (px da arte/s, antes da escala) que já conta como chacoalhão. */
+const SHAKE_SPEED = 110;
+/** Intervalo mínimo entre dois símbolos de raiva, venham de onde vierem (fuga, espera). */
+const ANGRY_FX_INTERVAL = 1.5;
+/** Distância do ponteiro (px da arte, antes da escala) que faz o bravo se afastar. */
+const FLEE_RADIUS = 48;
+
 const clamp = (v: number, min: number, max: number): number => Math.min(max, Math.max(min, v));
 
 export class Brain {
@@ -100,8 +121,13 @@ export class Brain {
   state = 'idle';
   /** 0 = exausto, 1 = elétrico. */
   energy: number;
+  /** 0 = sem paciência nenhuma, 100 = tudo bem. Só cai quando chacoalhado no colo. */
+  patience = PATIENCE_MAX;
+  /** Bravo: escapou do colo e foge de quem tentar pegá-lo, até a paciência voltar. */
+  angry = false;
   sleeping = false;
   onState: ((state: string, previous: string) => void) | null = null;
+  onAngry: ((angry: boolean) => void) | null = null;
 
   private readonly cat: CatBody;
   private readonly weights: Record<BehaviorName, number>;
@@ -110,6 +136,10 @@ export class Brain {
   private waitLeft = 0;
   private last: BehaviorName | null = null;
   private petting = false;
+  private shakeCooldown = 0;
+  /** Tempo até poder mostrar outro símbolo de raiva. */
+  private huffCooldown = 0;
+  private prevDragVX = 0;
 
   private readonly done = (): boolean => this.cat.animDone();
   private readonly arrived = (): boolean => !this.cat.moving || !this.cat.grounded;
@@ -127,6 +157,7 @@ export class Brain {
   update(dt: number): void {
     const drain = this.sleeping ? -0.05 : this.state === 'play' ? 0.02 : this.cat.moving ? 0.009 : 0.002;
     this.energy = clamp(this.energy - drain * dt, 0, 1);
+    this.updatePatience(dt);
 
     if (!this.routine) this.begin(this.pick());
     for (let guard = 0; guard < 16 && this.routine; guard++) {
@@ -209,6 +240,7 @@ export class Brain {
 
   /** Mouse parado em cima do gato. */
   pet(active: boolean): void {
+    if (this.angry) return; // bravo não aceita carinho
     if (active === this.petting) return;
     this.petting = active;
     if (active && (this.state === 'idle' || this.state === 'loaf' || this.state === 'nap' || this.state === 'groom')) {
@@ -815,6 +847,99 @@ export class Brain {
     this.setState('idle');
     c.anim('sit');
     yield c.rng.range(0.6, 1.2);
+  }
+
+  // ── Paciência e gato bravo ─────────────────────────────────────────────────
+
+  /**
+   * Roda a cada frame, esteja o gato ocupado com o que for: paciência é independente da
+   * rotina. Pública porque `Kitten.tick` chama direto enquanto arrasta (sem rodar o resto
+   * de `update`, que pisaria na física do arrasto).
+   */
+  updatePatience(dt: number): void {
+    const c = this.cat;
+    this.huffCooldown = Math.max(0, this.huffCooldown - dt);
+    this.shakeCooldown = Math.max(0, this.shakeCooldown - dt);
+    if (this.state === 'held') {
+      const v = c.dragVelocity;
+      const vx = v?.x ?? 0;
+      const speed = v ? Math.hypot(v.x, v.y) : 0;
+      // Chacoalhão = uma reversão brusca de direção com velocidade alta. Conta uma vez e
+      // espera `SHAKE_COOLDOWN` antes de contar a próxima.
+      const reversed = Math.sign(vx) !== 0 && Math.sign(vx) !== Math.sign(this.prevDragVX)
+        && Math.abs(this.prevDragVX) > SHAKE_SPEED * c.scale;
+      this.prevDragVX = vx;
+      if (reversed && speed > SHAKE_SPEED * c.scale && this.shakeCooldown <= 0) {
+        this.patience = clamp(this.patience - SHAKE_COST, 0, PATIENCE_MAX);
+        this.shakeCooldown = SHAKE_COOLDOWN;
+      }
+      // Liga e solta na hora: `run()` só atribui a rotina, e ela só avança dentro de
+      // `update()`, que fica pausado enquanto `drag.active`; sem o `escape()` aqui o gato
+      // ficaria preso na mão até alguém soltar o botão do mouse.
+      if (this.patience <= 0) {
+        this.setAngry(true);
+        c.escape();
+        this.run(this.afterEscape(), 'falling');
+      }
+    } else {
+      this.prevDragVX = 0;
+      this.patience = clamp(this.patience + PATIENCE_RECOVER * dt, 0, PATIENCE_MAX);
+      // Independe da rotina: se outra (chamado, social...) tomou o lugar de
+      // `angryBehavior()`, o bravo termina aqui mesmo quando a barra enche.
+      if (this.angry && this.patience >= PATIENCE_MAX) this.setAngry(false);
+    }
+  }
+
+  private setAngry(value: boolean): void {
+    if (value === this.angry) return;
+    this.angry = value;
+    this.onAngry?.(value);
+  }
+
+  /** Escapou do colo por falta de paciência: cai, se acalma no chão e mostra bravo. */
+  private *afterEscape(): Routine {
+    const c = this.cat;
+    c.escape(); // sem efeito se `updatePatience` já soltou (é o caminho normal, ver ali)
+    yield this.landed;
+    yield this.done;
+    this.setState('angry');
+    yield* this.angryBehavior();
+  }
+
+  /** Bravo: bufa de tempos em tempos e foge de quem chegar perto, até a barra encher. */
+  private *angryBehavior(): Routine {
+    const c = this.cat;
+    c.anim('sit');
+    while (this.angry) {
+      this.huff();
+      this.fleeIfNear();
+      if (!c.moving) c.anim('sit');
+      yield 0.15;
+    }
+    c.anim('sit');
+    yield c.rng.range(0.4, 0.9);
+  }
+
+  /** Símbolo de raiva, no máximo um a cada `ANGRY_FX_INTERVAL`. */
+  private huff(): void {
+    if (this.huffCooldown > 0) return;
+    this.cat.fx('angry');
+    this.huffCooldown = ANGRY_FX_INTERVAL;
+  }
+
+  /** Ponteiro perto demais (ou tentando agarrar): sai correndo para o lado oposto. */
+  private fleeIfNear(): void {
+    const c = this.cat;
+    const s = c.support;
+    if (!s || !c.grounded) return;
+    const p = c.pointer;
+    if (!p || performance.now() - p.t > 500) return;
+    const dx = c.x - p.x;
+    if (Math.hypot(dx, c.y - p.y) > FLEE_RADIUS * c.scale) return;
+    const dir = dx >= 0 ? 1 : -1;
+    const target = clamp(c.x + dir * c.rng.range(40, 90) * c.scale, s.left + c.halfWidth, s.right - c.halfWidth);
+    this.huff(); // bufa ao sair correndo (respeitando o intervalo)
+    c.walkTo(target, true);
   }
 
   // ── Convívio com os outros gatos ──────────────────────────────────────────

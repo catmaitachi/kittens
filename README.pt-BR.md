@@ -59,7 +59,7 @@ O gato desenha numa camada própria por cima do container e não mexe no seu lay
 
 <br>
 
-<h2 align="center">01 · Cinco pelagens</h2>
+<h2 align="center">01 · Pelagem é uma matriz de pixels</h2>
 
 <div align="center">
 
@@ -80,7 +80,36 @@ Cada pelagem tem um padrão próprio (manchas, listras ou pontas escuras), não 
 cat.setCoat('siamese');
 ```
 
-Também aceita uma paleta sua no lugar do nome. Os tipos `Palette` e `PALETTES` mostram o formato.
+Por baixo, uma pelagem é um `KittenCoat`: uma matriz de pixels 35×27 (a "skin", como a skin do Minecraft) mais algumas cores sólidas para o que não é pelo. Cabeça e rabo têm uma área cada, compartilhada por todas as poses, então um focinho ou um rabo listrado aparece em todas. O corpo, com as patas, tem uma área para cada tipo de pose (sentado, em pé e andando, deitado, espreguiçando, no colo), pixel a pixel, então dá para pintar o gato sentado sem mexer no gato andando. Cada célula guarda a cor exata que aparece, sombra incluída.
+
+```ts
+interface KittenCoat {
+  name: string;                             // vale em coat="nome" depois de registrar
+  skin: readonly string[];                  // 15 linhas de 20 caracteres; '.' é célula sem uso
+  colors: Record<string, string>;           // caractere da skin -> '#rrggbb'
+  outline: string;                          // o contorno escuro do gato
+  outlineSoft: string;                      // as dobras mais suaves, como o pescoço
+  nose: string;                             // nariz, língua e almofadinhas das patas
+  eyes: { left: string; right: string };    // cada olho com a cor dele
+}
+```
+
+`registerCoat(coat)` adiciona uma pelagem à lista para `coat="nome"` encontrar, e `resolveCoat(coat)` é o que a biblioteca usa por dentro para transformar um nome ou objeto num `KittenCoat` (nome desconhecido cai no calico, e um objeto parcial tem os campos que faltam completados com os do calico também). `COATS` tem as cinco pelagens prontas, caso você queira ler ou ajustar uma:
+
+```ts
+import { registerCoat, COATS } from '@catmaitachi/kittens';
+
+registerCoat({
+  ...COATS.calico,
+  name: 'meia-noite',
+  colors: { ...COATS.calico.colors, a: '#1a1a1a' },
+  eyes: { left: '#39c5bb', right: '#39c5bb' },
+});
+
+const cat = new Kitten(el, { coat: 'meia-noite' });
+```
+
+Mas o jeito mais fácil de montar uma é o [customizador da landing page](https://luuspz.dev/kittens/): pintar o gato pixel a pixel em qualquer pose, escolher a cor do contorno, do nariz e de cada olho separadamente, e depois copiar o `registerCoat({...})` pronto.
 
 <br>
 
@@ -149,6 +178,23 @@ for (const coat of ['calico', 'orange', 'gray', 'black', 'siamese']) {
 
 <br>
 
+<h2 align="center">05 · Segurar tem limite</h2>
+
+<div align="center">
+
+Arraste o gato e ele fica pendurado na sua mão. Segurar pode; chacoalhar, não. A paciência é uma barra de 0 a 100, e cada chacoalhão forte (uma reversão brusca de direção com velocidade alta) tira 35, com um segundo de pausa antes do próximo contar: três seguidos resolvem. No zero ele fica bravo e se solta: aparece uma barra de paciência sobre a cabeça, ele bufa de vez em quando, não deixa mais pegar e sai correndo se o cursor chegar perto. A barra enche sozinha em uns 12 segundos e, cheia, o gato se acalma e ela some.
+
+</div>
+
+```ts
+cat.addEventListener('angry', () => console.log('fugiu!'));
+cat.addEventListener('calm', () => console.log('se acalmou'));
+console.log(cat.patience); // 0 a 100
+console.log(cat.angry);    // true enquanto está bravo
+```
+
+<br>
+
 <h2 align="center">Poses</h2>
 
 <div align="center">
@@ -176,7 +222,7 @@ for (const coat of ['calico', 'orange', 'gray', 'black', 'siamese']) {
 
 </div>
 
-A arte é uma grade de texto em [`src/sprites/frames.ts`](https://github.com/catmaitachi/kittens/blob/main/src/sprites/frames.ts), com 28 frames desenhados sem mancha nenhuma. A pelagem vem da máscara de cada raça em [`src/sprites/palette.ts`](https://github.com/catmaitachi/kittens/blob/main/src/sprites/palette.ts), que pinta pixel a pixel na hora de gerar a spritesheet. As spritesheets prontas ficam em [`assets/`](https://github.com/catmaitachi/kittens/tree/main/assets).
+A arte é uma grade de texto em [`src/sprites/frames.ts`](https://github.com/catmaitachi/kittens/blob/main/src/sprites/frames.ts), com 28 frames desenhados sem pelagem nenhuma. [`src/sprites/skin.ts`](https://github.com/catmaitachi/kittens/blob/main/src/sprites/skin.ts) mapeia cada pixel de pelo de cada frame para uma célula da matriz 35×27 da pelagem (`skinCellAt`) e cada pixel de olho para `left` ou `right` (`eyeAt`), e é a partir disso que a spritesheet é pintada. As spritesheets prontas ficam em [`assets/`](https://github.com/catmaitachi/kittens/tree/main/assets), junto com um `skin-<nome>.png` da matriz crua de cada pelagem.
 
 <br>
 
@@ -188,7 +234,7 @@ Na tag, cada opção vira um atributo de mesmo nome (`<kitten-pet coat="black" s
 
 | Opção         | Padrão     | O que faz                                                             |
 | ------------- | ---------- | --------------------------------------------------------------------- |
-| `coat`        | `'calico'` | `calico`, `orange`, `gray`, `black`, `siamese` ou uma paleta sua      |
+| `coat`        | `'calico'` | `calico`, `orange`, `gray`, `black`, `siamese` ou um `KittenCoat` seu |
 | `scale`       | `3`        | Tamanho de cada pixel da arte, em px. Inteiros mantêm a arte nítida   |
 | `speed`       | `1`        | Multiplicador da velocidade de andar e correr                         |
 | `platforms`   | `'auto'`   | Onde ele pode pisar: `'auto'` ou um seletor CSS                       |
@@ -214,6 +260,7 @@ Comportamentos que `behaviors` aceita: `idle`, `loaf`, `wander`, `explore`, `cli
 | `pause()`/`resume()` | Congela e retoma a animação                        |
 | `destroy()`          | Remove o gato e solta tudo                         |
 | `state`, `energy`    | O que ele faz agora e quanto está disposto (0 a 1) |
+| `patience`, `angry`  | Paciência restante (0 a 100) e se está bravo agora |
 | `position`           | `{ x, y }` dentro do container                     |
 
 Ações de `do(...)`: `sit`, `walk`, `jump`, `climb`, `play`, `bat`, `groom`, `stretch`, `loaf`, `sleep`, `meow`, `explore`, `wander`, `social`.
@@ -230,6 +277,7 @@ A instância é um `EventTarget`. A camada também dispara os mesmos eventos com
 | `nudge`                                   | `{ element }` que levou a patada                    |
 | `summon`                                  | `{ x, y }` do chamado                               |
 | `social`                                  | `{ kind, other }`, o que ele fez com outro gato     |
+| `angry`, `calm`                           | fugiu e ficou bravo, ou se acalmou de novo          |
 | `click`, `pet`, `grab`, `drop`, `destroy` | só `cat`                                            |
 
 Com `prefers-reduced-motion`, os gatos ficam mais calmos e sem partículas. A animação para quando a aba fica escondida.
@@ -242,6 +290,7 @@ Com `prefers-reduced-motion`, os gatos ficam mais calmos e sem partículas. A an
 | `npm run build`      | Biblioteca em `dist/` (ESM + UMD + tipos)           |
 | `npm run build:site` | Landing page estática em `dist-site/`               |
 | `npm run typecheck`  | TypeScript estrito, sem emitir nada                 |
+| `npm run check`      | Confere a matriz da pelagem e o mapeamento pixel → célula |
 | `npm run sprites`    | Valida a pixel art e reexporta os PNGs de `assets/` |
 
 <br>

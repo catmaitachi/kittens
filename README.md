@@ -59,7 +59,7 @@ The cat draws on its own layer over the container and never touches your layout.
 
 <br>
 
-<h2 align="center">01 · Five coats</h2>
+<h2 align="center">01 · Coats are a pixel skin</h2>
 
 <div align="center">
 
@@ -80,7 +80,36 @@ Each coat has its own pattern (patches, stripes or dark points), not just a diff
 cat.setCoat('siamese');
 ```
 
-It also takes your own palette instead of a name. The `Palette` type and `PALETTES` show the shape.
+Under the hood a coat is a `KittenCoat`: a 35×27 grid of pixels (the "skin", like a Minecraft skin) plus a handful of solid colors for the parts that aren't fur. The head and the tail have one area each, shared by every pose, so a face or a striped tail shows up everywhere. The body, paws included, has one area per kind of pose (sitting, standing and walking, curled up, stretching, held), mapped pixel for pixel, so you can paint the sitting cat without touching the walking one. Each cell holds the exact color you see, shadows included.
+
+```ts
+interface KittenCoat {
+  name: string;                             // 'coat="name"' after you register it
+  skin: readonly string[];                  // 15 rows of 20 characters; '.' is an unused cell
+  colors: Record<string, string>;           // skin character -> '#rrggbb'
+  outline: string;                          // the dark line around the cat
+  outlineSoft: string;                      // the softer inner folds, like the neck
+  nose: string;                             // nose, tongue and paw pads
+  eyes: { left: string; right: string };    // each eye its own color
+}
+```
+
+`registerCoat(coat)` adds one to the list so `coat="name"` finds it, and `resolveCoat(coat)` is what the library calls internally to turn a name or object into a `KittenCoat` (an unknown name falls back to calico, and a partial object gets whatever fields it's missing filled in from calico too). `COATS` holds the five built-in coats if you want to read or tweak one:
+
+```ts
+import { registerCoat, COATS } from '@catmaitachi/kittens';
+
+registerCoat({
+  ...COATS.calico,
+  name: 'midnight',
+  colors: { ...COATS.calico.colors, a: '#1a1a1a' },
+  eyes: { left: '#39c5bb', right: '#39c5bb' },
+});
+
+const cat = new Kitten(el, { coat: 'midnight' });
+```
+
+The easiest way to build one, though, is the [customizer on the landing page](https://luuspz.dev/kittens/): paint the cat pixel by pixel in any pose, pick colors for the outline, nose and each eye separately, then copy the finished `registerCoat({...})` call.
 
 <br>
 
@@ -124,7 +153,6 @@ The cats read your actual layout. They stand on top of elements, climb their sid
 | An element to become a toy             | `data-kitten-toy`                                   |
 | An element that doesn't wobble on hits | `data-kitten-static`                                |
 | More climbing and no naps              | `behaviors: { climb: 5, nap: 0 }`                   |
-
 <br>
 
 <h2 align="center">04 · A box full of cats</h2>
@@ -145,6 +173,23 @@ for (const coat of ['calico', 'orange', 'gray', 'black', 'siamese']) {
   const cat = new Kitten(box, { coat });
   cat.addEventListener('social', (e) => console.log(e.detail.kind));
 }
+```
+
+<br>
+
+<h2 align="center">05 · Hold them, but not too long</h2>
+
+<div align="center">
+
+Drag the cat and it dangles in your hand. Holding it is fine; shaking it is not. Patience is a bar from 0 to 100, and every hard shake (a sharp reversal of direction at speed) takes 35, with a one-second pause before the next shake counts, so three in a row will do it. At zero it gets grumpy and wriggles free: a patience bar shows up over its head, it huffs now and then, won't let you pick it up, and runs off if your cursor gets close. The bar refills on its own in about 12 seconds, and once it's full the cat calms down and the bar goes away.
+
+</div>
+
+```ts
+cat.addEventListener('angry', () => console.log('escaped!'));
+cat.addEventListener('calm', () => console.log('calmed down'));
+console.log(cat.patience); // 0 to 100
+console.log(cat.angry);    // true while it's grumpy
 ```
 
 <br>
@@ -176,7 +221,7 @@ for (const coat of ['calico', 'orange', 'gray', 'black', 'siamese']) {
 
 </div>
 
-The art is a text grid in [`src/sprites/frames.ts`](https://github.com/catmaitachi/kittens/blob/main/src/sprites/frames.ts): 28 frames drawn plain, with no patches at all. The coat comes from each breed's mask in [`src/sprites/palette.ts`](https://github.com/catmaitachi/kittens/blob/main/src/sprites/palette.ts), which paints pixel by pixel when the spritesheet is built. The ready-made spritesheets live in [`assets/`](https://github.com/catmaitachi/kittens/tree/main/assets).
+The art is a text grid in [`src/sprites/frames.ts`](https://github.com/catmaitachi/kittens/blob/main/src/sprites/frames.ts): 28 frames drawn plain, with no coat baked in. [`src/sprites/skin.ts`](https://github.com/catmaitachi/kittens/blob/main/src/sprites/skin.ts) maps every fur pixel of every frame to a cell of the coat's 35×27 grid (`skinCellAt`) and each eye pixel to `left` or `right` (`eyeAt`), then paints the spritesheet from that. The ready-made spritesheets live in [`assets/`](https://github.com/catmaitachi/kittens/tree/main/assets), alongside a `skin-<name>.png` for each coat's raw grid.
 
 <br>
 
@@ -188,7 +233,7 @@ On the tag, each option is an attribute with the same name (`<kitten-pet coat="b
 
 | Option        | Default    | What it does                                                         |
 | ------------- | ---------- | -------------------------------------------------------------------- |
-| `coat`        | `'calico'` | `calico`, `orange`, `gray`, `black`, `siamese` or your own palette   |
+| `coat`        | `'calico'` | `calico`, `orange`, `gray`, `black`, `siamese` or your own `KittenCoat` |
 | `scale`       | `3`        | Size of each art pixel, in px. Whole numbers keep the art crisp      |
 | `speed`       | `1`        | Walking and running speed multiplier                                 |
 | `platforms`   | `'auto'`   | Where it can stand: `'auto'` or a CSS selector                       |
@@ -214,6 +259,7 @@ Behaviors accepted by `behaviors`: `idle`, `loaf`, `wander`, `explore`, `climb`,
 | `pause()`/`resume()` | Freezes and resumes the animation                     |
 | `destroy()`          | Removes the cat and cleans everything up              |
 | `state`, `energy`    | What it's doing now and how energetic it is (0 to 1)  |
+| `patience`, `angry`  | Patience left (0 to 100) and whether it's currently grumpy |
 | `position`           | `{ x, y }` inside the container                       |
 
 Actions for `do(...)`: `sit`, `walk`, `jump`, `climb`, `play`, `bat`, `groom`, `stretch`, `loaf`, `sleep`, `meow`, `explore`, `wander`, `social`.
@@ -230,6 +276,7 @@ The instance is an `EventTarget`. The layer also fires the same events with a `k
 | `nudge`                                   | `{ element }` that got batted                      |
 | `summon`                                  | `{ x, y }` of the call                             |
 | `social`                                  | `{ kind, other }`, what it did with another cat    |
+| `angry`, `calm`                           | it escaped and got grumpy, or calmed back down     |
 | `click`, `pet`, `grab`, `drop`, `destroy` | only `cat`                                         |
 
 With `prefers-reduced-motion`, the cats are calmer and skip particles. Animation stops while the tab is hidden.
@@ -242,6 +289,7 @@ With `prefers-reduced-motion`, the cats are calmer and skip particles. Animation
 | `npm run build`      | Library in `dist/` (ESM + UMD + types)               |
 | `npm run build:site` | Static landing page in `dist-site/`                  |
 | `npm run typecheck`  | Strict TypeScript, no output                         |
+| `npm run check`      | Checks the coat grid and the pixel-to-cell mapping    |
 | `npm run sprites`    | Validates the pixel art and re-exports `assets/` PNGs |
 
 <br>

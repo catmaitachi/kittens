@@ -56,6 +56,19 @@ export interface KittenEventDetail {
   [key: string]: unknown;
 }
 
+/** Estado de um arrasto (segurando o gato no colo) em andamento. */
+interface DragState {
+  id: number;
+  sx: number;
+  sy: number;
+  active: boolean;
+  lx: number;
+  ly: number;
+  lt: number;
+  vx: number;
+  vy: number;
+}
+
 const GRAVITY = 300; // px da arte / s²
 const WALK = 20; // px da arte / s
 const RUN = 62;
@@ -137,10 +150,11 @@ export class Kitten extends EventTarget implements CatBody, Tickable, Pet {
   private lastSpriteTransform = '-';
   private particles = 0;
   private bubble: HTMLDivElement | null = null;
+  private readonly patienceEl: HTMLDivElement;
   private nextPhrase: string | undefined;
 
   private rawPointer: { cx: number; cy: number; t: number } | null = null;
-  private drag: { id: number; sx: number; sy: number; active: boolean; lx: number; ly: number; lt: number; vx: number; vy: number } | null = null;
+  private drag: DragState | null = null;
   private hoverTimer = 0;
 
   private unsubscribe: (() => void) | null = null;
@@ -193,7 +207,13 @@ export class Kitten extends EventTarget implements CatBody, Tickable, Pet {
     this.spriteEl.className = 'sprite';
     this.hitEl = document.createElement('div');
     this.hitEl.className = 'hit';
-    this.catEl.append(this.spriteEl, this.hitEl);
+    // Barra de paciência: só aparece com o gato bravo e some quando ela enche de novo.
+    this.patienceEl = document.createElement('div');
+    this.patienceEl.className = 'patience';
+    this.patienceEl.setAttribute('part', 'patience');
+    this.patienceEl.hidden = true;
+    this.patienceEl.append(document.createElement('i'));
+    this.catEl.append(this.spriteEl, this.hitEl, this.patienceEl);
     this.root.append(this.catEl);
 
     const s = this.scale;
@@ -231,6 +251,7 @@ export class Kitten extends EventTarget implements CatBody, Tickable, Pet {
 
     this.brain = new Brain(this, options.behaviors);
     this.brain.onState = (state, previous) => this.emit('statechange', { state, previous });
+    this.brain.onAngry = (angry) => this.emit(angry ? 'angry' : 'calm');
 
     if (options.interactive ?? true) this.bindInput();
     else this.catEl.dataset.passive = '';
@@ -260,6 +281,16 @@ export class Kitten extends EventTarget implements CatBody, Tickable, Pet {
   /** 0 (exausto) a 1 (elétrico). */
   get energy(): number {
     return this.brain.energy;
+  }
+
+  /** 0 (sem paciência nenhuma) a 1 (tudo bem). Só cai enquanto está sendo segurado. */
+  get patience(): number {
+    return this.brain.patience;
+  }
+
+  /** Bravo: escapou do colo e foge de quem tentar pegá-lo. */
+  get angry(): boolean {
+    return this.brain.angry;
   }
 
   /**
@@ -349,7 +380,11 @@ export class Kitten extends EventTarget implements CatBody, Tickable, Pet {
       }
     }
 
-    if (!this.drag?.active) this.brain.update(dt);
+    if (this.drag?.active) this.brain.updatePatience(dt);
+    else this.brain.update(dt);
+    const angry = this.brain.angry;
+    if (this.patienceEl.hidden === angry) this.patienceEl.hidden = !angry;
+    if (angry) this.patienceEl.style.setProperty('--p', String(Math.round(this.brain.patience)));
     this.step(dt);
     this.render(this.animator.update(dt * 1000));
   }
@@ -419,6 +454,14 @@ export class Kitten extends EventTarget implements CatBody, Tickable, Pet {
     return { x: local.x, y: local.y, t: p.t };
   }
 
+  get dragVelocity(): { x: number; y: number } | null {
+    if (!this.drag?.active) return null;
+    // Sem `pointermove` recente (mão parada): a velocidade não decai sozinha em lugar
+    // nenhum, então conta como zero em vez da última leitura.
+    if (performance.now() - this.drag.lt > 80) return { x: 0, y: 0 };
+    return { x: this.drag.vx, y: this.drag.vy };
+  }
+
   anim(clip: ClipName, restart = false): void {
     this.animator.play(clip, restart);
   }
@@ -450,6 +493,15 @@ export class Kitten extends EventTarget implements CatBody, Tickable, Pet {
   stop(): void {
     this.goalX = null;
     this.moving = false;
+  }
+
+  /** Se solta da mão de quem segura (bravo escapando do colo) e cai, como um drop normal. */
+  escape(): void {
+    const d = this.drag;
+    if (!d?.active) return;
+    this.drag = null;
+    if (this.hitEl.hasPointerCapture(d.id)) this.hitEl.releasePointerCapture(d.id);
+    this.launchFromDrag(d);
   }
 
   jumpTo(target: Surface, x: number): void {
@@ -818,6 +870,9 @@ export class Kitten extends EventTarget implements CatBody, Tickable, Pet {
     } else if (name === 'zzz') {
       px += this.facing * 5 * s;
       py -= 12 * s;
+    } else if (name === 'angry') {
+      px += this.facing * 6 * s + this.rng.range(-2, 2) * s;
+      py -= 15 * s;
     } else if (name === 'dust') {
       const side = i % 2 ? 1 : -1;
       px += side * 7 * s;
@@ -880,6 +935,8 @@ export class Kitten extends EventTarget implements CatBody, Tickable, Pet {
     on(hit, 'pointerdown', (e) => {
       if (e.button !== 0 || this.destroyed) return;
       e.preventDefault();
+      this.rawPointer = { cx: e.clientX, cy: e.clientY, t: performance.now() };
+      if (this.brain.angry) return; // bravo não deixa se pegar
       try {
         hit.setPointerCapture(e.pointerId);
       } catch {
@@ -922,18 +979,8 @@ export class Kitten extends EventTarget implements CatBody, Tickable, Pet {
         }
         return;
       }
-      delete this.catEl.dataset.dragging;
-      this.spriteEl.style.transition = '';
-      this.tilt = 0;
-      const max = 260 * this.scale;
-      this.vx = clamp(d.vx, -max, max);
-      this.vy = clamp(d.vy, -max, max * 0.5);
-      this.grounded = false;
-      this.apexY = this.y;
-      this.jumpFromEl = undefined;
-      this.jumpTargetEl = undefined;
+      this.launchFromDrag(d);
       this.brain.dropped();
-      this.emit('drop');
     };
     on(hit, 'pointerup', release);
     on(hit, 'pointercancel', release);
@@ -941,7 +988,7 @@ export class Kitten extends EventTarget implements CatBody, Tickable, Pet {
     on(hit, 'pointerenter', () => {
       window.clearTimeout(this.hoverTimer);
       this.hoverTimer = window.setTimeout(() => {
-        if (this.drag) return;
+        if (this.drag || this.brain.angry) return;
         this.brain.pet(true);
         this.emit('pet');
       }, 650);
@@ -954,6 +1001,21 @@ export class Kitten extends EventTarget implements CatBody, Tickable, Pet {
     // Posição do mouse no palco (o gato às vezes caça o cursor).
     const stage: HTMLElement | Window = this.world.page ? window : this.container;
     on(stage, 'pointermove', (e) => void (this.rawPointer = { cx: e.clientX, cy: e.clientY, t: performance.now() }), { passive: true });
+  }
+
+  /** Larga a física do arrasto e sai voando com a velocidade que tinha na mão (drop normal ou bravo escapando). */
+  private launchFromDrag(d: DragState): void {
+    delete this.catEl.dataset.dragging;
+    this.spriteEl.style.transition = '';
+    this.tilt = 0;
+    const max = 260 * this.scale;
+    this.vx = clamp(d.vx, -max, max);
+    this.vy = clamp(d.vy, -max, max * 0.5);
+    this.grounded = false;
+    this.apexY = this.y;
+    this.jumpFromEl = undefined;
+    this.jumpTargetEl = undefined;
+    this.emit('drop');
   }
 
   private startDrag(): void {

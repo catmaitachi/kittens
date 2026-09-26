@@ -34,7 +34,7 @@ The cat draws on its own layer over the container and does not change the layout
 
 ## Options (tag attributes use the same names)
 
-- `coat`: `'calico'` (default), `'orange'`, `'gray'`, `'black'`, `'siamese'`, or a custom palette object
+- `coat`: `'calico'` (default), `'orange'`, `'gray'`, `'black'`, `'siamese'`, or a custom `KittenCoat` object
 - `scale`: size of each art pixel in px, default `3` (whole numbers keep it crisp)
 - `speed`: walk/run multiplier, default `1`
 - `platforms`: `'auto'` (default, visible boxes) or a CSS selector limiting where cats can stand
@@ -47,11 +47,28 @@ The cat draws on its own layer over the container and does not change the layout
 
 ## Methods and properties
 
-`do(action)` with `sit`, `walk`, `jump`, `climb`, `play`, `bat`, `groom`, `stretch`, `loaf`, `sleep`, `meow`, `explore`, `wander`, `social` · `meow(text?)` · `summonTo(x, y)` (px inside the container) · `setCoat(coat)` · `pause()` / `resume()` · `destroy()` · `state`, `energy` (0 to 1), `position` (`{ x, y }`). On the tag, the instance is `element.kitten`.
+`do(action)` with `sit`, `walk`, `jump`, `climb`, `play`, `bat`, `groom`, `stretch`, `loaf`, `sleep`, `meow`, `explore`, `wander`, `social` · `meow(text?)` · `summonTo(x, y)` (px inside the container) · `setCoat(coat)` · `pause()` / `resume()` · `destroy()` · `state`, `energy` (0 to 1), `position` (`{ x, y }`), `patience` (0 to 100, each hard shake while held takes 35), `angry` (true while it's grumpy and won't let you hold it). On the tag, the instance is `element.kitten`.
 
 ## Events
 
-The instance is an `EventTarget`: `statechange` `{ state, previous }`, `meow` `{ text }`, `land` `{ element, height }`, `nudge` `{ element }`, `summon` `{ x, y }`, `social` `{ kind, other }`, plus `click`, `pet`, `grab`, `drop`, `destroy`. Every `detail` includes `cat`. The same events bubble from the layer with a `kitten:` prefix (for example `kitten:land`), so you can listen on the container.
+The instance is an `EventTarget`: `statechange` `{ state, previous }`, `meow` `{ text }`, `land` `{ element, height }`, `nudge` `{ element }`, `summon` `{ x, y }`, `social` `{ kind, other }`, plus `click`, `pet`, `grab`, `drop`, `destroy`, `angry`, `calm`. Every `detail` includes `cat`. The same events bubble from the layer with a `kitten:` prefix (for example `kitten:land`), so you can listen on the container.
+
+## Custom coats
+
+A coat is a `KittenCoat`: a 35×27 grid of characters (the `skin`), a `colors` map from character to `#rrggbb`, and solid colors for `outline`, `outlineSoft`, `nose`, and `eyes: { left, right }`. Head and tail are shared by every pose; the body, paws included, has one area per kind of pose (sitting, standing/walking, curled up, stretching, held). Each cell is the exact color shown, shadows included. `registerCoat(coat)` makes it available as `coat="name"`; `COATS` holds the five built-in coats (`calico`, `orange`, `gray`, `black`, `siamese`) if you want to start from one. A coat object can be partial, missing fields are filled in from calico:
+
+```ts
+import { registerCoat, COATS } from '@catmaitachi/kittens';
+
+registerCoat({
+  ...COATS.calico,
+  name: 'midnight',
+  colors: { ...COATS.calico.colors, a: '#1a1a1a' },
+  eyes: { left: '#39c5bb', right: '#39c5bb' },
+});
+```
+
+You can also pass a `KittenCoat` object directly as `coat` without registering it first. When the person you're helping already picked colors on the [customizer](https://luuspz.dev/kittens/), they'll hand you the full `KittenCoat` object as JSON, wrapped in a `registerCoat(...)` call, plus which name to pass as `coat`.
 
 ## Controlling how cats see the page
 
@@ -67,3 +84,5 @@ Several cats in the same container notice each other and interact. The library r
 1. Ask me which element should host the cats if it isn't obvious, and how many cats and which coats I want.
 2. Install the package and add the smallest working code for my stack.
 3. Tell me which options or data attributes are worth tuning for my layout.
+
+If a coat is attached below this line, call `registerCoat` with it once (for example alongside the import), then pass its name as `coat`:
