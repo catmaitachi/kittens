@@ -181,7 +181,7 @@ for (const coat of ['calico', 'orange', 'gray', 'black', 'siamese']) {
 
 <div align="center">
 
-Drag the cat and it dangles in your hand. Holding it is fine; shaking it is not. Patience is a bar from 0 to 100, and every hard shake (a sharp reversal of direction at speed) takes 35, with a one-second pause before the next shake counts, so three in a row will do it. At zero it gets grumpy and wriggles free: a patience bar shows up over its head, it huffs now and then, won't let you pick it up, and runs off if your cursor gets close. The bar refills on its own in about 12 seconds, and once it's full the cat calms down and the bar goes away.
+Drag the cat and it dangles in your hand. Holding it is fine; shaking it is not. Patience is a bar from 0 to 100, and every hard shake (a sharp reversal of direction at speed) takes 50, with a one-second pause before the next shake counts, so two in a row will do it. At zero it gets grumpy and wriggles free: a patience bar shows up over its head, it huffs now and then, won't let you pick it up, and runs off if your cursor gets close. The bar refills on its own in about 12 seconds, and once it's full the cat calms down and the bar goes away.
 
 </div>
 

@@ -99,8 +99,8 @@ const WAIT_TIMEOUT = 14;
 
 /** A paciência é uma barra de 0 a 100. Só chacoalhar gasta; segurar parado não. */
 const PATIENCE_MAX = 100;
-/** Quanto cada chacoalhão tira: três seguidos deixam o gato bravo. */
-const SHAKE_COST = 35;
+/** Quanto cada chacoalhão tira: dois seguidos deixam o gato bravo. */
+const SHAKE_COST = 50;
 /** Depois de um chacoalhão contado, o próximo só conta passado este tempo (s): o que pesa é a
  * insistência de quem chacoalha, não quão rápido a mão vai e volta. */
 const SHAKE_COOLDOWN = 1;

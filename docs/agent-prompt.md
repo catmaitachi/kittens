@@ -47,7 +47,7 @@ The cat draws on its own layer over the container and does not change the layout
 
 ## Methods and properties
 
-`do(action)` with `sit`, `walk`, `jump`, `climb`, `play`, `bat`, `groom`, `stretch`, `loaf`, `sleep`, `meow`, `explore`, `wander`, `social` · `meow(text?)` · `summonTo(x, y)` (px inside the container) · `setCoat(coat)` · `pause()` / `resume()` · `destroy()` · `state`, `energy` (0 to 1), `position` (`{ x, y }`), `patience` (0 to 100, each hard shake while held takes 35), `angry` (true while it's grumpy and won't let you hold it). On the tag, the instance is `element.kitten`.
+`do(action)` with `sit`, `walk`, `jump`, `climb`, `play`, `bat`, `groom`, `stretch`, `loaf`, `sleep`, `meow`, `explore`, `wander`, `social` · `meow(text?)` · `summonTo(x, y)` (px inside the container) · `setCoat(coat)` · `pause()` / `resume()` · `destroy()` · `state`, `energy` (0 to 1), `position` (`{ x, y }`), `patience` (0 to 100, each hard shake while held takes 50), `angry` (true while it's grumpy and won't let you hold it). On the tag, the instance is `element.kitten`.
 
 ## Events
 

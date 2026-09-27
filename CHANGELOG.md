@@ -4,6 +4,12 @@ All notable changes to this project are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- A hard shake now takes 50 patience instead of 35, so two in a row make the cat grumpy.
+
 ## [2.0.0] - 2026-09-25
 
 This release changes how a coat is described. In 1.x a coat was a handful of flat colors plus a
