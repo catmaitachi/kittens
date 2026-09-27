@@ -161,41 +161,39 @@ button { font: inherit; color: inherit; }
 .code .s { color: #f2a06a; }
 .code .k { color: #e8c07a; }
 
-/* 02 · uma sala de casa (parkour): papel de parede listrado com bolinhas, rodapé e piso de
-   tábuas. Cores fixas, como papel colado: não escurecem com o tema. */
+/* 02 · uma sala em pixel art (parkour), na grade dos gatos: parede listrada com bolinhas
+   quadradas, rodapé e piso de tábuas, tudo em blocos de cor chapada. Cores fixas, como papel
+   colado: não escurecem com o tema. */
 /* Nada de filter nos pais dos palcos: com gatos animando dentro, o navegador refaria o
-   filtro do palco inteiro a cada quadro. A sombra da folha é um irmão com o mesmo rasgo. */
-/* Moldura de quadro em volta da sala: madeira com chanfro por dentro e por fora. */
+   filtro do palco inteiro a cada quadro. */
+/* Moldura em blocos: contorno escuro, luz em cima e à esquerda, sombra embaixo, sem degradê. */
 .house-wrap {
-  position: relative; padding: 16px;
-  background: linear-gradient(135deg, #9a6a3f, #6b4526 55%, #8a5a36);
-  box-shadow: 4px 8px 14px var(--shadow), inset 0 0 0 2px rgba(255, 236, 200, .25), inset 0 0 0 6px rgba(0, 0, 0, .18);
+  position: relative; padding: 16px; background: #8a5a36;
+  box-shadow: 6px 6px 0 var(--shadow), inset 0 0 0 3px #2b2321, inset 6px 6px 0 #b07a4a, inset -6px -6px 0 #5b3a26;
 }
-.house { box-shadow: inset 0 3px 8px rgba(0, 0, 0, .35); }
 .sheet-shadow { position: absolute; inset: 0; translate: 3px 7px; background: var(--shadow); }
 .house {
   --floor: 30px;
   height: 400px;
+  box-shadow: 0 0 0 3px #2b2321, inset 0 6px 0 rgba(0, 0, 0, .18);
   background:
-    repeating-linear-gradient(90deg, rgba(60, 35, 15, .35) 0 2px, transparent 2px 72px) left bottom / 100% var(--floor) no-repeat,
+    repeating-linear-gradient(90deg, rgba(60, 35, 15, .35) 0 3px, transparent 3px 72px) left bottom / 100% var(--floor) no-repeat,
     linear-gradient(transparent calc(100% - var(--floor) - 10px), #fffaf1 calc(100% - var(--floor) - 10px) calc(100% - var(--floor) - 4px), #6b4526 calc(100% - var(--floor) - 4px) calc(100% - var(--floor)), #b07a45 calc(100% - var(--floor))),
-    radial-gradient(rgba(255, 250, 241, .55) 2.5px, transparent 3px) 12px 12px / 48px 48px,
-    repeating-linear-gradient(90deg, #f1d7ae 0 24px, #ebcd9f 24px 48px),
-    var(--grain);
-  background-blend-mode: normal, normal, normal, multiply, normal;
+    conic-gradient(from 270deg at 6px 6px, rgba(255, 250, 241, .55) 25%, transparent 0) 21px 21px / 48px 48px,
+    repeating-linear-gradient(90deg, #f1d7ae 0 24px, #ebcd9f 24px 48px);
 }
 .tape { position: absolute; z-index: 2; width: 96px; height: 28px; background: var(--tape); pointer-events: none; }
-/* móveis desenhados em SVG, apoiados na folha. Os gatos pisam nas faixas .surface (invisíveis,
-   marcadas como plataforma) posicionadas em % do móvel: assento, braços, teto, prateleira. */
+/* Móveis em pixel art: cada unidade do viewBox é um pixel de arte. Os gatos pisam nas faixas
+   .surface (invisíveis, marcadas como plataforma) posicionadas em % do móvel. */
 /* Largura em pixels de arte (`--fw`) vezes a escala dos gatos (`--art`, posta pelo main.ts):
-   os móveis ficam na proporção dos bichos (~2,3 cm por pixel de arte). */
+   os pixels dos móveis têm o tamanho dos pixels dos bichos. */
 .furniture { position: absolute; left: var(--x); top: var(--y); width: calc(var(--fw) * var(--art, 3px)); aspect-ratio: var(--ratio); }
 /* No chão da folha: a base encosta onde os gatos andam. */
 .furniture.floor { top: auto; bottom: 0; }
-.furniture svg { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(2px 4px 3px var(--shadow)); }
+.furniture svg { display: block; width: 100%; height: 100%; filter: drop-shadow(var(--art, 3px) var(--art, 3px) 0 rgba(43, 35, 33, .25)); }
 .furniture .surface { position: absolute; left: var(--sx); top: var(--sy); width: var(--sw); height: 10px; }
-/* 03 · folha de caderno com as notas desenhadas direto nela: contorno de caneta tremido (filtro
-   #wobble no HTML), hachura de lápis por cima das linhas e tinta na cor do tema. */
+/* 03 · folha de caderno rabiscada a caneta: as plataformas são só traços e o resto (seta,
+   cursor, gatinho, pegadas) é desenho de fundo, tudo na cor da tinta do tema. */
 .sketch-wrap { position: relative; }
 .sketch {
   height: 420px; cursor: crosshair;
@@ -204,36 +202,28 @@ button { font: inherit; color: inherit; }
     repeating-linear-gradient(transparent 0 27px, var(--lines) 27px 28px),
     var(--grain), var(--sheet);
 }
-.sketch .note {
-  position: absolute; left: var(--x); top: var(--y); width: var(--w); height: var(--h); rotate: var(--r, 0deg);
-  color: var(--text); font-weight: 700;
+.ledge, .scribble { position: absolute; left: var(--x); top: var(--y); margin: 0; color: var(--text); }
+/* O gato pisa na borda de cima da caixa, e o traço à mão fica logo abaixo: um SVG usado de
+   máscara, então a tinta segue o tema. */
+.ledge {
+  width: var(--w); height: 6px; background: currentColor;
+  mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 6' preserveAspectRatio='none'><path d='M1 3.2Q30 1.4 55 3.4T99 2.6' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'/><path d='M8 4.6Q40 3.4 72 4.4' fill='none' stroke='black' stroke-width='1.2' stroke-linecap='round' opacity='.5'/></svg>") 0 0 / 100% 100%;
 }
-/* Contorno de caneta tremido (filtro #wobble no HTML) e hachura de lápis com falhas, para as
-   linhas do caderno aparecerem por baixo. Fica numa camada própria: o filtro não entorta o texto. */
-.sketch .note::before {
-  content: ""; position: absolute; inset: 0; z-index: -1;
-  border: 2.5px solid currentColor; border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  background: repeating-linear-gradient(-35deg, color-mix(in srgb, var(--c) var(--hatch, 70%), transparent) 0 2.5px, transparent 2.5px 7px);
-  filter: url(#wobble);
-}
-.sketch .note { isolation: isolate; }
-.note { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 10px 10px 8px; text-align: center; font-size: 14px; line-height: 1.3; }
-.note .doodle { position: relative; width: 52px; height: auto; flex: none; }
-.hint-note { flex-direction: row; gap: 10px; }
-.hint-note .doodle { width: 40px; }
-.hint-note { font-size: 13px; }
-.pin-drop {
-  position: absolute; width: 16px; height: 16px; border-radius: 50%; pointer-events: none;
-  background: radial-gradient(circle at 35% 35%, #ffb27a, var(--orange) 45%, #9e4a1c);
-  box-shadow: 1px 3px 3px rgba(0, 0, 0, .45);
-}
-.pin-drop { translate: -50% -50%; z-index: 5; animation: pin 2.6s ease-out forwards; }
-@keyframes pin {
-  0% { scale: 2.2; opacity: 0; }
-  12% { scale: 1; opacity: 1; }
-  80% { opacity: 1; }
-  100% { opacity: 0; }
-}
+.ledge:nth-of-type(even) { scale: -1 1; }
+/* Traço tremido de caneta (filtro #wobble no HTML) só nos desenhos: o texto fica reto. */
+.scribble { width: var(--s); pointer-events: none; opacity: .75; }
+.scribble svg, svg.scribble { overflow: visible; filter: url(#wobble); }
+.scribble path { fill: none; stroke: currentColor; stroke-width: 2.5px; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.paws { fill: currentColor; opacity: .3; }
+.sketch-hint { display: flex; align-items: flex-start; gap: 6px; width: min(300px, 40%); font-size: 15px; font-weight: 700; line-height: 1.3; rotate: -3deg; }
+.sketch-hint svg { flex: none; width: 90px; margin-top: 12px; }
+/* Onde o gato foi chamado: um ratinho rabiscado a caneta e circulado, que se desenha e some. */
+.call-mark { position: absolute; z-index: 5; width: 56px; translate: -50% -50%; pointer-events: none; color: var(--text); animation: fade-out 2.6s ease-out forwards; }
+.call-mark svg { display: block; overflow: visible; filter: url(#wobble); }
+.call-mark path { fill: none; stroke: currentColor; stroke-width: 2.5px; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw .35s ease-out forwards; }
+.call-mark path + path { animation-delay: .3s; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes fade-out { 80% { opacity: 1; } 100% { opacity: 0; } }
 
 /* 01 · palco com holofote (customizador): uma caixa preta de teatro, recortada no mesmo
    rasgo das outras folhas, com o gato no centro sob um cone de luz. O palco é escuro nos
@@ -385,9 +375,11 @@ button { font: inherit; color: inherit; }
 }
 
 
+/* Plaquinha em pixel: borda de 3 px e cantos recortados em degrau, sem sombra borrada. */
 .sticker {
-  position: absolute; display: grid; place-items: center; width: 76px; height: 76px; border-radius: 50%; pointer-events: none;
-  background: var(--grain), var(--orange); color: var(--black); font: 26px/1 var(--display); box-shadow: 1px 3px 4px var(--shadow);
+  position: absolute; padding: 4px 12px 6px; pointer-events: none; border: 3px solid var(--black);
+  background: var(--orange); color: var(--black); font: 26px/1 var(--display);
+  clip-path: polygon(0 3px, 3px 3px, 3px 0, calc(100% - 3px) 0, calc(100% - 3px) 3px, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 3px calc(100% - 3px), 0 calc(100% - 3px));
 }
 
 /* 04 · caixa de papelão */
@@ -460,25 +452,27 @@ button { font: inherit; color: inherit; }
   /* Móveis um pouco menores que a escala dos gatos: numa tela estreita a sala não comporta o sofá em 1:1. */
   .house .furniture { --art: 1.6px; }
   .footer-grid { grid-template-columns: 1fr; }
-  .note { font-size: 11px; padding-inline: 4px; }
-  .sketch .note:nth-of-type(1) { --x: 6% !important; --y: 20% !important; --w: 34% !important; --h: 76px !important; }
-  .sketch .note:nth-of-type(2) { --x: 12% !important; --y: 54% !important; --w: 32% !important; --h: 72px !important; }
-  .sketch .note:nth-of-type(3) { --x: 58% !important; --y: 22% !important; --w: 36% !important; --h: 76px !important; }
-  .sketch .note.hint-note { --x: 54% !important; --y: 55% !important; --w: 40% !important; --h: 84px !important; flex-direction: column; }
-  .sketch .note.hint-note .doodle { width: 26px; }
+  .ledge:nth-of-type(1) { --x: 6% !important; --y: 40% !important; --w: 34% !important; }
+  .ledge:nth-of-type(2) { --x: 38% !important; --y: 62% !important; --w: 30% !important; }
+  .ledge:nth-of-type(3) { --x: 62% !important; --y: 38% !important; --w: 32% !important; }
+  .ledge:nth-of-type(4) { --x: 70% !important; --y: 76% !important; --w: 24% !important; }
+  .sketch-hint { --x: 20% !important; --y: 7% !important; width: 66%; font-size: 12px; }
+  .sketch-hint svg { width: 56px; }
+  .cursor { --x: 76% !important; --y: 20% !important; --s: 32px !important; }
+  .doodle-cat { --x: 4% !important; --y: 74% !important; --s: 60px !important; }
+  .paws { --x: 32% !important; --y: 86% !important; --s: 100px !important; }
+  .sparkle { display: none; }
   .sticker { left: 6% !important; top: 6% !important; }
   .demo-head { margin-bottom: 20px; }
   .code { font-size: 12.5px; padding: 14px 16px; }
   .sketch { height: 340px; }
-  .sketch .note { gap: 4px; padding: 6px; font-size: 11px; }
-  .sketch .note .doodle { width: 34px; }
   .box { height: 420px; }
-  .sticker { width: 56px; height: 56px; font-size: 20px; }
+  .sticker { font-size: 20px; }
   .stamp { font-size: 24px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pin-drop { animation: none; }
+  .call-mark, .call-mark path { animation: none; stroke-dashoffset: 0; }
   .demo-head { transition: none; rotate: 0deg; translate: 0 0; scale: 1; }
   .num.thud { animation: none; }
 }

@@ -674,11 +674,14 @@ function summon(): void {
       last = now;
       const { x, y } = (e as CustomEvent<{ x: number; y: number }>).detail;
       const pin = document.createElement('i');
-      pin.className = 'pin-drop';
+      pin.className = 'call-mark';
+      pin.innerHTML =
+        '<svg viewBox="0 0 60 60" aria-hidden="true"><path pathLength="1" d="M46 15C38 5 16 8 10 23s4 30 22 30 26-14 20-28c-3-7-12-11-21-9"/><path pathLength="1" d="M20 37c0-10 11-13 18-7l7 5-7 2zM30 28c-1-5 5-6 6-2M39 32h.1M20 37c-6 1-7-5-3-7M25 37v2M34 37v2"/></svg>';
       pin.style.left = `${x}px`;
       pin.style.top = `${y}px`;
       stage.append(pin);
-      pin.addEventListener('animationend', () => pin.remove());
+      // O traço de cada path também solta animationend; só o sumiço do todo remove.
+      pin.addEventListener('animationend', (ev) => ev.target === pin && pin.remove());
       setTimeout(() => pin.remove(), 4000);
     });
   }

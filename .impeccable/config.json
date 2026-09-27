@@ -11,6 +11,15 @@
         ],
         "createdAt": "2026-09-25T20:57:39.648Z",
         "reason": "Recortes intencionais: html/body cortam as letras giradas do hero, o palco do customizador corta o cone de luz e a caixa da seção 04 prende os gatos; nenhum menu ou tooltip fica dentro deles (o dropdown de código está fora do palco)."
+      },
+      {
+        "rule": "organic-clip-path",
+        "value": "*",
+        "files": [
+          "site/index.html"
+        ],
+        "createdAt": "2026-09-27T03:57:05.655Z",
+        "reason": "Claude: the torn-paper edge is the site's established paper-cutout look (tornClip in site/main.ts, committed before this session); intentional, not a stand-in for a raster"
       }
     ]
   }
