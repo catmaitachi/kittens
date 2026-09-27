@@ -59,13 +59,13 @@ The cat draws on its own layer over the container and never touches your layout.
 
 <br>
 
-<h2 align="center">01 · Coats are a pixel skin</h2>
+<h2 align="center">01 · Paint the cat your way</h2>
 
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/coats-dark.gif">
-  <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/coats-light.gif" alt="A notebook page with coat swatches; picking one changes the cat's coat" width="760">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/customizer-dark.gif">
+  <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/customizer-light.gif" alt="A cat under a spotlight on a dark stage, with the coats listed on the left and pose silhouettes on the right; picking a coat repaints the cat" width="760">
 </picture>
 
 <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/coats-walk.gif" alt="The five cats walking side by side: calico, orange, gray, black and siamese" width="520">
@@ -74,7 +74,7 @@ The cat draws on its own layer over the container and never touches your layout.
 
 </div>
 
-Each coat has its own pattern (patches, stripes or dark points), not just a different color. You can switch it while the cat is already on the page:
+Each coat has its own pattern of patches, stripes or dark points on top of its colors. You can switch it while the cat is already on the page:
 
 ```ts
 cat.setCoat('siamese');
@@ -109,17 +109,40 @@ registerCoat({
 const cat = new Kitten(el, { coat: 'midnight' });
 ```
 
-The easiest way to build one, though, is the [customizer on the landing page](https://luuspz.dev/kittens/): paint the cat pixel by pixel in any pose, pick colors for the outline, nose and each eye separately, then copy the finished `registerCoat({...})` call.
+The easiest way to build one is the customizer at the top of the [landing page](https://luuspz.dev/kittens/). Start from one of the five coats, pick a pose on the right and press the pencil to paint pixel by pixel, going through the pose's frames with the arrows under the cat (the keyboard works too: arrow keys pick a pixel, Enter paints it). Painting an outline, nose or eye pixel changes that color on the whole cat, and each eye keeps its own. There's a dropper, a row of the colors you've used, undo and redo (Ctrl+Z and Ctrl+Shift+Z) and a button that wipes your coat so you can start over. The page remembers your coat as "yours" between visits. When it's done, "coat code" shows the `registerCoat({...})` call ready to copy, and the Prompt button copies a message you can paste into your coding agent so it adds the coat to your project.
 
 <br>
 
-<h2 align="center">02 · Double-click and they come</h2>
+<h2 align="center">02 · Parkour across the page</h2>
+
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/parkour-dark.gif">
+  <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/parkour-light.gif" alt="A pixel-art living room with a sofa, a window and two shelves; the cats jump and climb from one to another" width="760">
+</picture>
+
+</div>
+
+The cats read your actual layout. They stand on top of elements, climb their sides and often leap somewhere else halfway up. Jumps get bigger in bigger containers. In the living room on the landing page, the furniture is plain SVG and a few empty spans with `data-kitten-platform` mark where a cat can stand: the sofa seat and arms, the windowsill, each shelf. You decide where they can go:
+
+| I want…                                | Do this                                             |
+| -------------------------------------- | --------------------------------------------------- |
+| Only some elements as ground           | `platforms: '.card, img'` or `data-kitten-platform` |
+| The cat to ignore a section            | `data-kitten-ignore` on the element                 |
+| An element to become a toy             | `data-kitten-toy`                                   |
+| An element that doesn't wobble on hits | `data-kitten-static`                                |
+| More climbing and no naps              | `behaviors: { climb: 5, nap: 0 }`                   |
+
+<br>
+
+<h2 align="center">03 · Double-click and they come</h2>
 
 <div align="center">
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/summon-dark.gif">
-  <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/summon-light.gif" alt="A cork board: each double-click drops a pin and the cats run to it" width="760">
+  <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/summon-light.gif" alt="A torn notebook page with pen strokes as ledges; each double-click circles a little mouse in pen and the cats run to it" width="760">
 </picture>
 
 </div>
@@ -131,28 +154,15 @@ cat.summonTo(320, 120);
 cat.addEventListener('summon', (e) => console.log(e.detail.x, e.detail.y));
 ```
 
-<br>
+You can also drag a cat to pick it up, and it dangles from your hand. Holding it is fine. Shaking it is not. Patience goes from 0 to 100 and every hard shake (a sharp reversal of direction at speed) costs 50. After one shake the next only counts a second later, so two in a row will do it. At zero the cat wriggles free and sulks: a patience bar shows up over its head, it huffs now and then, won't let you pick it up and runs off if your cursor gets close. The bar refills on its own in about 12 seconds, and once it's full the cat calms down and the bar goes away.
 
-<h2 align="center">03 · Parkour across the page</h2>
+```ts
+cat.addEventListener('angry', () => console.log('escaped!'));
+cat.addEventListener('calm', () => console.log('calmed down'));
+console.log(cat.patience); // 0 to 100
+console.log(cat.angry);    // true while it's grumpy
+```
 
-<div align="center">
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/parkour-dark.gif">
-  <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/parkour-light.gif" alt="A scrapbook page with polaroids at different heights; the cats hop from one to another" width="760">
-</picture>
-
-</div>
-
-The cats read your actual layout. They stand on top of elements, climb their sides and often leap somewhere else halfway up. Jumps get bigger in bigger containers. You decide where they can go:
-
-| I want…                                | Do this                                             |
-| -------------------------------------- | --------------------------------------------------- |
-| Only some elements as ground           | `platforms: '.card, img'` or `data-kitten-platform` |
-| The cat to ignore a section            | `data-kitten-ignore` on the element                 |
-| An element to become a toy             | `data-kitten-toy`                                   |
-| An element that doesn't wobble on hits | `data-kitten-static`                                |
-| More climbing and no naps              | `behaviors: { climb: 5, nap: 0 }`                   |
 <br>
 
 <h2 align="center">04 · A box full of cats</h2>
@@ -166,30 +176,13 @@ The cats read your actual layout. They stand on top of elements, climb their sid
 
 </div>
 
-Cats in the same container notice each other. They say hi, bat at each other, play tag and lie down side by side. There's nothing to configure, just create more than one:
+Cats in the same container notice each other. They say hi, bat at each other, play tag and lie down side by side. There's nothing to configure. Just create more than one:
 
 ```ts
 for (const coat of ['calico', 'orange', 'gray', 'black', 'siamese']) {
   const cat = new Kitten(box, { coat });
   cat.addEventListener('social', (e) => console.log(e.detail.kind));
 }
-```
-
-<br>
-
-<h2 align="center">05 · Hold them, but not too long</h2>
-
-<div align="center">
-
-Drag the cat and it dangles in your hand. Holding it is fine; shaking it is not. Patience is a bar from 0 to 100, and every hard shake (a sharp reversal of direction at speed) takes 50, with a one-second pause before the next shake counts, so two in a row will do it. At zero it gets grumpy and wriggles free: a patience bar shows up over its head, it huffs now and then, won't let you pick it up, and runs off if your cursor gets close. The bar refills on its own in about 12 seconds, and once it's full the cat calms down and the bar goes away.
-
-</div>
-
-```ts
-cat.addEventListener('angry', () => console.log('escaped!'));
-cat.addEventListener('calm', () => console.log('calmed down'));
-console.log(cat.patience); // 0 to 100
-console.log(cat.angry);    // true while it's grumpy
 ```
 
 <br>

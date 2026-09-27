@@ -59,13 +59,13 @@ O gato desenha numa camada própria por cima do container e não mexe no seu lay
 
 <br>
 
-<h2 align="center">01 · Pelagem é uma matriz de pixels</h2>
+<h2 align="center">01 · Pinte o gato do seu jeito</h2>
 
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/coats-dark.gif">
-  <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/coats-light.gif" alt="Folha de caderno com amostras de pelagem; ao escolher uma, o gato troca de cor" width="760">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/pt/customizer-dark.gif">
+  <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/pt/customizer-light.gif" alt="Um gato sob um holofote num palco escuro, com as pelagens à esquerda e as silhuetas das poses à direita; ao escolher uma pelagem, o gato é repintado" width="760">
 </picture>
 
 <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/coats-walk.gif" alt="Os cinco gatos andando lado a lado: calico, orange, gray, black e siamese" width="520">
@@ -74,7 +74,7 @@ O gato desenha numa camada própria por cima do container e não mexe no seu lay
 
 </div>
 
-Cada pelagem tem um padrão próprio (manchas, listras ou pontas escuras), não só outra cor. Dá para trocar com o gato já na página:
+Cada pelagem tem um padrão próprio de manchas, listras ou pontas escuras por cima das cores. Dá para trocar com o gato já na página:
 
 ```ts
 cat.setCoat('siamese');
@@ -109,17 +109,40 @@ registerCoat({
 const cat = new Kitten(el, { coat: 'meia-noite' });
 ```
 
-Mas o jeito mais fácil de montar uma é o [customizador da landing page](https://luuspz.dev/kittens/): pintar o gato pixel a pixel em qualquer pose, escolher a cor do contorno, do nariz e de cada olho separadamente, e depois copiar o `registerCoat({...})` pronto.
+O jeito mais fácil de montar uma é o customizador no topo da [landing page](https://luuspz.dev/kittens/). Comece de uma das cinco pelagens, escolha uma pose à direita e aperte o lápis para pintar pixel a pixel, passando pelos quadros da pose com as setas embaixo do gato (dá para usar o teclado também: as setas escolhem o pixel e o Enter pinta). Pintar um pixel do contorno, do nariz ou de um olho muda essa cor no gato inteiro, e cada olho guarda a sua. Tem conta-gotas, uma fileira com as cores que você já usou, desfazer e refazer (Ctrl+Z e Ctrl+Shift+Z) e um botão que apaga a sua pelagem para recomeçar. A página guarda a sua pelagem como "a sua" entre uma visita e outra. Quando terminar, "código da pelagem" mostra o `registerCoat({...})` pronto para copiar, e o botão Prompt copia uma mensagem para colar no seu agente de código e ele adicionar a pelagem ao projeto.
 
 <br>
 
-<h2 align="center">02 · Dois cliques e eles vêm</h2>
+<h2 align="center">02 · Parkour pela página</h2>
+
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/pt/parkour-dark.gif">
+  <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/pt/parkour-light.gif" alt="Uma sala em pixel art com sofá, janela e duas prateleiras; os gatos pulam e escalam de um móvel para outro" width="760">
+</picture>
+
+</div>
+
+Os gatos leem o layout de verdade. Pisam no topo dos elementos, escalam as laterais e, no meio da subida, costumam pular para outro lugar. O pulo cresce com o tamanho do container. Na sala da landing page, os móveis são SVG comum e alguns spans vazios com `data-kitten-platform` marcam onde o gato pode pisar: o assento e os braços do sofá, o peitoril da janela, cada prateleira. Você decide onde eles podem ir:
+
+| Quero…                                  | Faço assim                                          |
+| --------------------------------------- | --------------------------------------------------- |
+| Só alguns elementos como chão           | `platforms: '.card, img'` ou `data-kitten-platform` |
+| Que ele ignore um trecho                | `data-kitten-ignore` no elemento                    |
+| Que um elemento vire brinquedo          | `data-kitten-toy`                                   |
+| Que um elemento não balance com patadas | `data-kitten-static`                                |
+| Mais escalada e nada de soneca          | `behaviors: { climb: 5, nap: 0 }`                   |
+
+<br>
+
+<h2 align="center">03 · Dois cliques e eles vêm</h2>
 
 <div align="center">
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/pt/summon-dark.gif">
-  <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/pt/summon-light.gif" alt="Mural de cortiça: a cada duplo clique aparece um alfinete e os gatos correm até ele" width="760">
+  <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/pt/summon-light.gif" alt="Uma folha de caderno rasgada com traços de caneta servindo de chão; a cada duplo clique aparece um ratinho circulado a caneta e os gatos correm até ele" width="760">
 </picture>
 
 </div>
@@ -131,28 +154,14 @@ cat.summonTo(320, 120);
 cat.addEventListener('summon', (e) => console.log(e.detail.x, e.detail.y));
 ```
 
-<br>
+Dá também para arrastar o gato e pegar no colo, e ele fica pendurado na sua mão. Segurar pode. Chacoalhar, não. A paciência vai de 0 a 100 e cada chacoalhão forte (uma reversão brusca de direção com velocidade alta) tira 50. Depois de um chacoalhão, o próximo só conta um segundo depois, então dois seguidos bastam. No zero o gato se solta e fica emburrado: aparece uma barra de paciência sobre a cabeça, ele bufa de vez em quando, não deixa mais pegar e sai correndo se o cursor chegar perto. A barra enche sozinha em uns 12 segundos e, cheia, o gato se acalma e ela some.
 
-<h2 align="center">03 · Parkour pela página</h2>
-
-<div align="center">
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/pt/parkour-dark.gif">
-  <img src="https://raw.githubusercontent.com/catmaitachi/kittens/main/docs/pt/parkour-light.gif" alt="Página de scrapbook com polaroids em alturas diferentes; os gatos sobem de uma para outra" width="760">
-</picture>
-
-</div>
-
-Os gatos leem o layout de verdade. Pisam no topo dos elementos, escalam as laterais e, no meio da subida, costumam pular para outro lugar. O pulo cresce com o tamanho do container. Você decide onde eles podem ir:
-
-| Quero…                                  | Faço assim                                          |
-| --------------------------------------- | --------------------------------------------------- |
-| Só alguns elementos como chão           | `platforms: '.card, img'` ou `data-kitten-platform` |
-| Que ele ignore um trecho                | `data-kitten-ignore` no elemento                    |
-| Que um elemento vire brinquedo          | `data-kitten-toy`                                   |
-| Que um elemento não balance com patadas | `data-kitten-static`                                |
-| Mais escalada e nada de soneca          | `behaviors: { climb: 5, nap: 0 }`                   |
+```ts
+cat.addEventListener('angry', () => console.log('fugiu!'));
+cat.addEventListener('calm', () => console.log('se acalmou'));
+console.log(cat.patience); // 0 a 100
+console.log(cat.angry);    // true enquanto está bravo
+```
 
 <br>
 
@@ -167,30 +176,13 @@ Os gatos leem o layout de verdade. Pisam no topo dos elementos, escalam as later
 
 </div>
 
-Gatos no mesmo container se enxergam. Eles se cumprimentam, dão patadinha, brincam de pega-pega e deitam lado a lado. Não precisa configurar nada, só criar mais de um:
+Gatos no mesmo container se enxergam. Eles se cumprimentam, dão patadinha, brincam de pega-pega e deitam lado a lado. Não precisa configurar nada, é só criar mais de um:
 
 ```ts
 for (const coat of ['calico', 'orange', 'gray', 'black', 'siamese']) {
   const cat = new Kitten(box, { coat });
   cat.addEventListener('social', (e) => console.log(e.detail.kind));
 }
-```
-
-<br>
-
-<h2 align="center">05 · Segurar tem limite</h2>
-
-<div align="center">
-
-Arraste o gato e ele fica pendurado na sua mão. Segurar pode; chacoalhar, não. A paciência é uma barra de 0 a 100, e cada chacoalhão forte (uma reversão brusca de direção com velocidade alta) tira 35, com um segundo de pausa antes do próximo contar: três seguidos resolvem. No zero ele fica bravo e se solta: aparece uma barra de paciência sobre a cabeça, ele bufa de vez em quando, não deixa mais pegar e sai correndo se o cursor chegar perto. A barra enche sozinha em uns 12 segundos e, cheia, o gato se acalma e ela some.
-
-</div>
-
-```ts
-cat.addEventListener('angry', () => console.log('fugiu!'));
-cat.addEventListener('calm', () => console.log('se acalmou'));
-console.log(cat.patience); // 0 a 100
-console.log(cat.angry);    // true enquanto está bravo
 ```
 
 <br>
